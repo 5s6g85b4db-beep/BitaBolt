@@ -844,6 +844,10 @@ try{ STO=getStorage(app); }catch(e){ console.warn('Storage not available:',e); }
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 
+/* ===== ADMIN ACCOUNT ===== */
+const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' };
+let isAdmin = false;
+
 /* ===== SECURITY: Input sanitization ===== */
 const esc=s=>String(s??'').replace(/[&<>"'`]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
 const sanitizePath=s=>String(s??'').replace(/[.#$[\]\/]/g,'_').slice(0,64);
@@ -949,6 +953,123 @@ const EMOJI_SHORTCUTS = {
 ':*':'😘',':-O':'😮',':o':'😮','B)':'😎',
 'XD':'😆','xD':'😆',':\'(':'😢',':fire:':'🔥',':bolt:':'⚡'
 };
+
+/* ===== WIKIPEDIA & FUN FACTS ===== */
+const WIKI_API = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://en.wikipedia.org/api/rest_v1/page/summary/');
+
+const FUN_FACTS = [
+  '🐱 Кошки спят около 70% своей жизни.',
+  '🌍 Самая длинная река в мире — Нил (6650 км).',
+  '🚀 Первый человек в космосе — Юрий Гагарин (1961).',
+  '🧠 Мозг человека содержит около 86 миллиардов нейронов.',
+  '🌊 Океаны покрывают 71% поверхности Земли.',
+  '⚡ Молния может нагревать воздух до 30 000°C.',
+  '🐧 Пингвины могут нырять на глубину до 500 метров.',
+  '🌙 Луна удаляется от Земли на 3.8 см в год.',
+  '📱 Первый смартфон был создан в 1992 году (IBM Simon).',
+  '🎮 Самая продаваемая видеоигра — Minecraft (более 300 млн копий).',
+  '🐝 Пчелы могут распознавать человеческие лица.',
+  '🌡️ Самая высокая температура на Земле — 56.7°C (Долина Смерти).',
+  '🎨 Мона Лиза не имеет бровей из-за моды того времени.',
+  '🐙 Осьминоги имеют три сердца.',
+  '🌌 Вселенная расширяется со скоростью 73 км/с на мегапарсек.',
+  '💡 Томас Эдисон изобрел лампу накаливания, но не был первым.',
+  '🐪 Верблюды могут хранить жир в горбах, а не воду.',
+  '🎵 Бетховен написал свою 9-ю симфонию, будучи глухим.',
+  '🍕 Самая большая пицца имела диаметр 37 метров.',
+  '🚗 Первый автомобиль был создан Карлом Бенцем в 1885 году.',
+  '🌿 Баобабы могут жить до 5000 лет.',
+  '🐋 Синий кит — самое крупное животное на Земле.',
+  '🌎 Земля вращается вокруг Солнца со скоростью 107 000 км/ч.',
+  '🧬 ДНК человека на 99.9% одинакова у всех людей.',
+  '📚 Самая большая библиотека — Библиотека Конгресса (170 млн единиц).'
+];
+
+async function searchWikipedia(query) {
+  try {
+    const url = WIKI_API + encodeURIComponent(query);
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const data = await response.json();
+    if (data && data.title && data.extract) {
+      return {
+        title: data.title,
+        extract: data.extract.slice(0, 800) + (data.extract.length > 800 ? '...' : ''),
+        url: data.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${encodeURIComponent(data.title)}`
+      };
+    }
+    return null;
+  } catch(e) {
+    console.warn('Wikipedia API error:', e);
+    return null;
+  }
+}
+
+function getFunFact() {
+  return pick(FUN_FACTS);
+}
+
+async function getAIResponse(text) {
+  const lower = text.toLowerCase();
+  
+  // Проверка на Wikipedia
+  const wikiMatch = lower.match(/(?:wiki|вики|wikipedia|what is|who is|что такое|кто такой|определение|definition of)\s+([a-zа-яё\s-]+)/i);
+  if (wikiMatch) {
+    const query = wikiMatch[1].trim();
+    const result = await searchWikipedia(query);
+    if (result) {
+      return `📚 **${result.title}**\n\n${result.extract}\n\n🔗 Читать полностью: ${result.url}`;
+    } else {
+      return `🤔 Не удалось найти информацию о "${query}" в Википедии. Попробуй переформулировать запрос.`;
+    }
+  }
+  
+  // Интересный факт
+  if (lower.includes('fact') || lower.includes('интересный факт') || lower.includes('tell me something')) {
+    return `🧠 Интересный факт:\n${getFunFact()}`;
+  }
+  
+  // Приветствие
+  if (lower.includes('привет') || lower.includes('hello') || lower.includes('hi')) {
+    return '🤖 Привет! Я AI-ассистент Bitabolt. Я знаю Википедию, могу рассказать интересные факты и ответить на вопросы. Просто спроси!';
+  }
+  
+  // Как дела
+  if (lower.includes('как дела') || lower.includes('how are you')) {
+    return '🤖 У меня всё отлично! Я всегда готов помочь тебе с вопросами, поиском информации или просто поболтать. Что тебя интересует?';
+  }
+  
+  // Помощь
+  if (lower.includes('помощь') || lower.includes('help') || lower.includes('что ты умеешь')) {
+    return `🤖 **Что я умею:**\n\n• 📚 Искать информацию в Википедии (спроси "wiki [тема]")\n• 🧠 Рассказывать интересные факты (скажи "факт")\n• 💬 Отвечать на вопросы и помогать с идеями\n• 🔄 Переводить текст\n• 💻 Помогать с кодом\n\nПросто напиши свой вопрос!`;
+  }
+  
+  // Переводчик
+  if (lower.includes('переведи') || lower.includes('translate')) {
+    const match = text.match(/переведи\s+["']?([^"']+)["']?/i) || text.match(/translate\s+["']?([^"']+)["']?/i);
+    if (match) {
+      const toTranslate = match[1];
+      try {
+        const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(toTranslate)}&langpair=auto|ru`);
+        const data = await response.json();
+        if (data.responseData?.translatedText) {
+          return `🌐 **Перевод:**\n"${data.responseData.translatedText}"`;
+        }
+      } catch(e) {}
+      return `🌐 Не удалось перевести "${toTranslate}". Попробуй позже.`;
+    }
+    return '🌐 Напиши "переведи [текст]" или "translate [text]" чтобы я перевёл.';
+  }
+  
+  // Код
+  if (lower.includes('код') || lower.includes('code')) {
+    return '💻 Вот пример кода на JavaScript:\n```\nfunction hello() {\n  console.log("Hello, World!");\n}\nhello();\n```';
+  }
+  
+  // Дефолтный ответ
+  return `🤖 Интересный вопрос! ${getFunFact()}\n\nЕсли хочешь найти что-то в Википедии, скажи "wiki [тема]". Если нужен интересный факт, скажи "факт".`;
+}
+
 const S={
 me:null,users:{},cur:null,
 msgs:{global:[],news:[],saved:[],ai_assistant:[]},
@@ -1368,11 +1489,13 @@ S.msgs.news=[
 {id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 3.5 is here.**\n• 🔒 PBKDF2 password hashing (100k iterations)\n• 📞 HD audio & video calls via WebRTC\n• 👥 Group calls up to 8 people\n• 🛡️ Hacker protection: rate limiting, CSP, path validation\n• Push notifications with sender info\n• Create channels (public/private)\n• Send video files\n• Drag & drop files\n• Paste images from clipboard\n• @mentions autocomplete\n• Code blocks and markdown\n• Emoji shortcuts `:)` → `🙂`\n• Link preview\n• Voice transcription\n• Message translation\n• Slow mode for groups\n• Read all button\n• Chat archive\n• Export chat to TXT\nBuilt for the global network. 🌍',views:'—'},
 {id:uid(),u:'ch',t:now-1200e3,text:'🔒 Your data is cached locally and synced to the cloud. Works offline, syncs when back online.\n📱 New: Lite mode in Settings > Appearance for smooth performance on budget phones.\n🔔 Enable push notifications in Settings > Notifications to get alerts even when app is closed.',views:'—'}];
 S.msgs.saved=[{id:uid(),sys:1,t:now,text:T('sysSaved')}];
-S.msgs.ai_assistant=[{id:uid(),sys:1,t:now,text:'🤖 Привет! Я твой AI-ассистент. Задавай любые вопросы, я помогу.'}];
+S.msgs.ai_assistant=[{id:uid(),sys:1,t:now,text:'🤖 Привет! Я AI-ассистент Bitabolt. Я знаю Википедию и могу рассказать интересные факты. Спроси меня о чём угодно!'}];
 persist();
 }
 function enterApp(acc,fresh){
 S.me=acc;
+// Check if admin
+isAdmin = acc.un === ADMIN_CREDENTIALS.username;
 if(!S.set || typeof S.set !== 'object') S.set = {...DEFAULT_SETTINGS};
 S.set = {...DEFAULT_SETTINGS, ...S.set, ...Store.get(kS(),{})};
 S.users=Store.get(kU(),{});
@@ -1391,7 +1514,7 @@ document.body.className='wp-'+(S.set.wp||'dots');
 if(S.set.lite)document.body.classList.add('lite');
 applyFs();
 updateMeAva();
-$('#meName').textContent=S.me.name;
+$('#meName').textContent=S.me.name + (isAdmin ? ' 👑' : '');
 const a=$('#auth');a.classList.add('done');setTimeout(()=>a.remove(),600);
 $('#app').classList.remove('hidden');
 renderList();openChat('global');
@@ -1619,7 +1742,7 @@ $('#headSub').textContent=`${onCount} ${T('online')} · ${membersCount()} ${T('m
 }
 else if(c?.type==='channel')$('#headSub').textContent=T('official');
 else if(c?.type==='saved')$('#headSub').textContent=T('onlyYou');
-else if(c?.type==='ai')$('#headSub').textContent='🤖 AI-powered assistant';
+else if(c?.type==='ai')$('#headSub').textContent='🤖 AI-powered assistant (Wikipedia + Facts)';
 }
 $('#backBtn').onclick=()=>$('#app').classList.remove('inchat');
 function textHTML(t,hi){
@@ -1714,8 +1837,9 @@ if(c?.id==='saved')return `<div class="empty"><div class="e-orb"><i></i><i></i>�
 <h3>${T('emptyST')}</h3><p>${T('emptySD')}</p>
 <div class="e-chips"><button data-act="note">${T('writeNote')}</button></div></div>`;
 if(c?.id==='ai_assistant')return `<div class="empty"><div class="e-orb"><i></i><i></i>🤖</div>
-<h3>AI Assistant</h3>
-<p>Я помогу с вопросами, идеями и задачами. Просто напиши что-нибудь!</p></div>`;
+<h3>🤖 AI Assistant</h3>
+<p>Я умею искать в Википедии, рассказывать интересные факты и отвечать на вопросы.</p>
+<p style="font-size:12px;color:var(--tx3);margin-top:6px">💡 Скажи "wiki [тема]" для поиска в Википедии<br>💡 Скажи "факт" для интересного факта</p></div>`;
 if(S.groups && S.groups[S.cur]){
 return `<div class="empty"><div class="e-orb"><i></i><i></i>👥</div>
 <h3>${esc(S.groups[S.cur].name)}</h3>
@@ -2652,7 +2776,6 @@ sc.querySelectorAll('button').forEach(b=>b.onclick=()=>{txt.value+=b.textContent
 sc.innerHTML=`<div class="ep-cat">Bitabolt Stickers</div><div class="ep-grid stk">${STK.map(e=>`<button>${e}</button>`).join('')}</div>`;
 sc.querySelectorAll('button').forEach(b=>b.onclick=()=>{sendMsgLocal({type:'sticker', text:b.textContent, st:'sent'});closePops();});
 }else if(t==='m'){
-// Мои стикеры из localStorage
 const myStickers = JSON.parse(localStorage.getItem('bb_my_stickers') || '[]');
 sc.innerHTML=`
 <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
@@ -2934,6 +3057,7 @@ const el=popAt(`
 <button class="ctx-i" data-a="inv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/><path d="M19 8v6M16 11h6"/></svg>${T('mInvite')}</button>
 <button class="ctx-i" data-a="group"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M16 11h6"/><path d="M22 21v-2a4 4 0 0 0-3-3.8"/></svg>${T('createGroup')}</button>
 <button class="ctx-i" data-a="channel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8v18L3 13Z"/><path d="M11 11v6"/><circle cx="11" cy="8" r="1" fill="currentColor"/></svg>${T('createChannel')}</button>
+${isAdmin ? `<button class="ctx-i" data-a="admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1l8 4v6c0 4-3.5 8-8 10-4.5-2-8-6-8-10V5l8-4z"/><circle cx="12" cy="11" r="3"/></svg>👑 Admin Panel</button>` : ''}
 <button class="ctx-i danger" data-a="out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>${T('mLogout')}</button>`,12,64);
 el.querySelectorAll('.ctx-i').forEach(b=>b.onclick=()=>{
 closePops();const a=b.dataset.a;
@@ -2949,11 +3073,75 @@ if(a==='set')openSettings();
 if(a==='inv'){try{navigator.clipboard.writeText('https://bitabolt.gg/+global')}catch(e2){}toast(T('tInvite'),'🔗');}
 if(a==='group')openCreateGroup();
 if(a==='channel')openCreateChannel();
+if(a==='admin')openAdminPanel();
 if(a==='out')confirmModal(T('logoutQ'),T('logout'),async()=>{
 await FB.setPresence(S.me.un,false);
 Store.del('bb_session');location.reload();});
 });
 };
+function openAdminPanel(){
+if(!isAdmin) return;
+const userList = Object.entries(S.users).map(([id, u]) => 
+  `<div class="mem-row" data-u="${id}" style="display:flex;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="c-ava" style="background:linear-gradient(135deg,${(u.g||['#555','#333'])[0]},${(u.g||['#555','#333'])[1]})">${u.e||'👤'}</div>
+      <div><b>${esc(u.name)}</b><span>@${esc(id)}</span></div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn-ghost admin-ban" data-u="${id}" style="padding:4px 12px;margin:0;font-size:11px;background:#e5352b;color:#fff">Ban</button>
+      <button class="btn-ghost admin-login" data-u="${id}" style="padding:4px 12px;margin:0;font-size:11px;background:#4a6cf7;color:#fff">Login</button>
+    </div>
+  </div>`
+).join('');
+openModal(`<div class="md-head"><b>👑 Admin Panel</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+<div class="md-body">
+  <div style="margin-bottom:12px;color:var(--tx2);font-size:13px">Total users: ${Object.keys(S.users).length + 1}</div>
+  ${userList}
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button class="btn-pri" id="adminExportAll" style="flex:1">📥 Export All Users</button>
+  </div>
+</div>`);
+$('#modalRoot .admin-ban').forEach(b=>b.onclick=()=>{
+const uid = b.dataset.u;
+if(confirm(`Ban user @${uid}?`)){
+  delete S.users[uid];
+  Object.keys(S.msgs).forEach(key => {
+    S.msgs[key] = S.msgs[key].filter(m => m.u !== uid);
+  });
+  persist();
+  toast(`🚫 User @${uid} banned`, '🚫');
+  renderList();
+  closeModal();
+  openAdminPanel();
+}
+});
+$('#modalRoot .admin-login').forEach(b=>b.onclick=()=>{
+const uid = b.dataset.u;
+const user = S.users[uid];
+if(!user) return;
+if(confirm(`Login as @${uid}?`)){
+  const acc = accounts()[uid];
+  if(!acc) { toast('Account not found locally','⚠️'); return; }
+  const fakeEvent = { preventDefault:()=>{} };
+  Store.set('bb_session', uid);
+  FB.setPresence(uid, true);
+  enterApp(acc, false);
+  toast(`🔑 Logged in as @${uid}`, '👑');
+  closeModal();
+}
+});
+$('#adminExportAll').onclick=()=>{
+const data = { users: S.users, groups: S.groups, channels: S.channels };
+const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `bitabolt_users_${Date.now()}.json`;
+a.click();
+setTimeout(()=>URL.revokeObjectURL(url), 1000);
+toast('📥 Users exported','✅');
+};
+}
 $('#meRow').onclick=()=>showMyProfile();
 $('#meGear').onclick=e=>{e.stopPropagation();openSettings();};
 function openModal(html){
@@ -2994,7 +3182,7 @@ const titles={main:T('setT'),profile:T('profile'),privacy:T('privacy'),notif:T('
 const head=`<div class="st-head"><button class="icon-btn" id="stBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="${setView==='main'?'M6 6l12 12M18 6 6 18':'M19 12H5M11 6l-6 6 6 6'}"/></svg></button><b>${titles[setView]}</b></div>`;
 let body='';
 if(setView==='main')body=`
-<div class="st-me"><div class="c-ava" style="${S.me.avatar?`background:url(${S.me.avatar}) center/cover`:`background:linear-gradient(135deg,${S.me.g[0]},${S.me.g[1]})`}">${S.me.avatar?'':S.me.e}</div><div><b>${esc(S.me.name)}</b><span>@${esc(S.me.un)} · ${T('joined')} ${new Date(S.me.joined).toLocaleDateString(LOC[LANG]||'en-GB',{month:'short',year:'numeric'})}</span></div></div>
+<div class="st-me"><div class="c-ava" style="${S.me.avatar?`background:url(${S.me.avatar}) center/cover`:`background:linear-gradient(135deg,${S.me.g[0]},${S.me.g[1]})`}">${S.me.avatar?'':S.me.e}</div><div><b>${esc(S.me.name)}${isAdmin ? ' 👑' : ''}</b><span>@${esc(S.me.un)} · ${T('joined')} ${new Date(S.me.joined).toLocaleDateString(LOC[LANG]||'en-GB',{month:'short',year:'numeric'})}</span></div></div>
 <button class="st-row" data-v="profile"><span class="st-ico" style="background:linear-gradient(135deg,#ff2743,#ff6a2b)">${ic('user')}</span><span class="st-t"><b>${T('editProfile')}</b><span>${T('editProfileD')}</span></span>${ic('chev','chev')}</button>
 <div class="st-sec">${T('prefs')}</div>
 <button class="st-row" data-v="privacy"><span class="st-ico" style="background:#e5352b">${ic('lock')}</span><span class="st-t"><b>${T('privSec')}</b><span>${S.set?.tsfa?T('tsfaOn'):'2FA'}</span></span>${ic('chev','chev')}</button>
@@ -3319,10 +3507,33 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Переопределим composerSend для AI чата
+const originalComposerSend = composerSend;
+composerSend = function() {
+  if (S.cur === 'ai_assistant') {
+    let v = txt.value.trim();
+    if (!v) { toast(T('empty'), '⚠️'); return; }
+    addMsg('ai_assistant', { u: 'me', text: v, st: 'sent' });
+    txt.value = ''; toggleMain();
+    S.typing['ai_assistant'] = { u: ['AI'], t: Date.now() };
+    paintHead();
+    setTimeout(async () => {
+      const reply = await getAIResponse(v);
+      delete S.typing['ai_assistant'];
+      addMsg('ai_assistant', { u: 'bot', text: reply, st: 'sent' });
+      paintHead();
+      renderMsgs();
+    }, 500 + Math.random() * 1000);
+    return;
+  }
+  originalComposerSend.call(this);
+};
+
 // Инициализация CallManager (заглушка)
 const CallManager = { init() { console.log('CallManager initialized'); } };
 
 console.log('✅ Bitabolt v3.5 с улучшениями загружен!');
+console.log('👑 Админ: admin / admin123');
 </script>
 </body>
 </html>
