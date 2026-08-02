@@ -519,7 +519,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .mention-item .c-ava{width:28px;height:28px;font-size:13px}
 .mention-item b{font-size:13px}
 .mention-item span{font-size:11px;color:var(--tx3)}
-/* ===== CALL UI ===== */
 #callScreen{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column}
 #callScreen.on{display:flex}
 .call-bg{position:absolute;inset:0;background:radial-gradient(900px 620px at 50% 30%,rgba(255,39,67,.18),transparent 60%),radial-gradient(700px 520px at 20% 80%,rgba(255,106,43,.12),transparent 60%),#050507}
@@ -543,7 +542,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .cc-btn.on{background:linear-gradient(135deg,var(--a1),var(--a2));border-color:transparent;box-shadow:0 8px 22px rgba(255,39,67,.45)}
 .cc-btn.danger{background:#e5352b;border-color:transparent;box-shadow:0 8px 22px rgba(229,53,43,.5)}
 .cc-btn.danger:hover{background:#ff1744}
-/* ===== ADMIN PANEL ===== */
 .admin-badge{background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:3px 10px;border-radius:8px;font-size:10px;font-weight:900;letter-spacing:1px;margin-left:6px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 4px 12px rgba(255,215,0,.4)}
 .admin-badge::before{content:'★';font-size:11px}
 .admin-panel{background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,237,78,.03));border:1px solid rgba(255,215,0,.25);border-radius:14px;padding:14px;margin:10px 0}
@@ -562,7 +560,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .admin-stat{background:rgba(0,0,0,.25);border-radius:10px;padding:10px;text-align:center}
 .admin-stat b{font-size:20px;font-weight:900;color:var(--a1);display:block}
 .admin-stat span{font-size:10px;color:var(--tx3);letter-spacing:1px;text-transform:uppercase}
-/* Profile action buttons */
 .profile-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
 .profile-actions button{padding:12px;border-radius:13px;font-weight:800;font-size:13px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .profile-actions button:hover{transform:translateY(-2px)}
@@ -627,7 +624,7 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 <div class="af"><div class="af-i">🛡️</div><div><b>Admin Panel</b><span>Powerful admin tools to manage users and keep the network safe.</span></div></div>
 </div>
 <div class="al-pulse"><span class="pl">NETWORK<br>PULSE</span><span class="eq"><i></i><i></i><i></i><i></i><i></i><i></i></span><small>firebase realtime · connected</small></div>
-<div class="al-foot">BITABOLT v3.7 · 02.08.2026 · bitabolt.gg</div>
+<div class="al-foot">BITABOLT v3.8 · 08.01.2026 · bitabolt.gg</div>
 </div>
 </div>
 <div class="a-right">
@@ -744,7 +741,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 <div id="lightbox"><img id="lbImg" alt=""></div>
 <input type="file" id="chatImgInput" accept="image/*" style="display:none">
 <input type="file" id="chatVideoInput" accept="video/*" style="display:none">
-<!-- CALL UI -->
 <div id="callScreen">
 <div class="call-bg"></div>
 <div class="call-top">
@@ -779,12 +775,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-let STO=null;
-try{ STO=getStorage(app); }catch(e){ console.warn('Storage not available:',e); }
+let STO = null;
+try{ STO = getStorage(app); }catch(e){ console.warn('Storage init:', e); }
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 
-/* ===== SECURITY ===== */
 const esc=s=>String(s??'').replace(/[&<>"'`]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
 const sanitizePath=s=>String(s??'').replace(/[.#$[\]\/]/g,'_').slice(0,64);
 const sanitizeUsername=s=>String(s??'').toLowerCase().replace(/[^a-z0-9_]/g,'').slice(0,16);
@@ -792,6 +787,8 @@ const sanitizeText=s=>String(s??'').slice(0,10000);
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const fmtDur=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+const fmtT=t=>new Date(t).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 
 const Crypto={
   enc:new TextEncoder(),dec:new TextDecoder(),
@@ -869,18 +866,15 @@ const S={
   set:{...DEFAULT_SETTINGS, ...Store.get('bb_settings',{})},
   messageQueue:[],
   isAdmin:false,
-  aiContext:{} // контекст AI чата
+  aiContext:[],
+  fbListeners:{}
 };
 
 const kU=()=>'bb_u_'+(S.me?.un||'anon'), kM=()=>'bb_m_'+(S.me?.un||'anon'), kS=()=>'bb_s_'+(S.me?.un||'anon');
 
 function persist(){
   try{localStorage.setItem(kM(),JSON.stringify(S.msgs));}
-  catch(e){
-    const imgs=[...S.msgs.global,...S.msgs.news,...S.msgs.saved,...(S.msgs.ai_assistant||[])].filter(m=>m.img&&!/^https?:/.test(m.img)).sort((a,b)=>a.t-b.t);
-    imgs.slice(0,Math.max(1,Math.floor(imgs.length/2))).forEach(m=>{delete m.img;m.ph=1;});
-    try{localStorage.setItem(kM(),JSON.stringify(S.msgs));toast('Local storage full — oldest photos cleared','⚠️');}catch(e2){}
-  }
+  catch(e){toast('Storage error — some messages not saved','⚠️');}
 }
 
 const CHATS={
@@ -912,21 +906,11 @@ const EMOJI_SHORTCUTS = {
   'XD':'😆','xD':'😆',':\'(':'😢',':fire:':'🔥',':bolt:':'⚡'
 };
 
-/* ===== ADMIN SYSTEM ===== */
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'admin123';
-const ADMIN_HASH = {
-  salt:'admin_salt_v1',
-  hash:'admin_hash_placeholder',
-  iv:'admin_iv_placeholder',
-  isAdmin:true
-};
 
-function isAdminUser(un){
-  return un === ADMIN_USERNAME;
-}
+function isAdminUser(un){ return un === ADMIN_USERNAME; }
 
-/* ===== FIREBASE ===== */
 const FB={
   online:false,listeners:{},storageOK:null,
   async uploadMedia(blob,name,type){
@@ -999,7 +983,7 @@ const FB={
       if(msg.img){if(/^https?:/.test(msg.img))payload.img=msg.img;else if(msg.img.length<=1200000)payload.img=msg.img;}
       if(msg.url&&/^https?:/.test(msg.url))payload.url=msg.url;
       await set(newRef,payload);
-      if(Math.random() < 0.1) this.trimMessages(chatId,200);
+      if(Math.random() < 0.05) this.trimMessages(chatId,200);
     }catch(e){console.warn('[FB] sendMsg:',e);}
   },
   async deleteMessage(chatId,msgId){
@@ -1008,7 +992,7 @@ const FB={
   listenMessages(chatId,cb){
     try{
       if(this.listeners['msg_'+chatId])off(ref(db,'chats/'+sanitizePath(chatId)+'/messages'),this.listeners['msg_'+chatId]);
-      const msgQ=query(ref(db,'chats/'+sanitizePath(chatId)+'/messages'),limitToLast(100));
+      const msgQ=query(ref(db,'chats/'+sanitizePath(chatId)+'/messages'),limitToLast(200));
       this.listeners['msg_'+chatId]=onValue(msgQ,snap=>{
         const data=snap.val()||{};
         cb(Object.values(data).sort((a,b)=>a.t-b.t));
@@ -1067,6 +1051,18 @@ const FB={
     setTimeout(()=>el.classList.remove('on'),online?2000:5000);
     const sn=$('#sbNet');
     if(sn&&!online){sn.classList.add('off');sn.innerHTML='<i></i>offline';}
+  },
+  // Fetch all users once
+  async fetchAllUsers(){
+    try{
+      const snap=await get(ref(db,'users'));
+      if(!snap.exists())return;
+      const data=snap.val();
+      Object.entries(data).forEach(([uid,v])=>{
+        if(v.profile)S.users[uid]={...S.users[uid],...v.profile,id:uid};
+      });
+      Store.set(kU(), S.users);
+    }catch(e){console.warn('[FB] fetchUsers:',e);}
   }
 };
 
@@ -1176,6 +1172,7 @@ $('#suGo').onclick=async()=>{
   all[un]=acc;
   Store.set('bb_accounts',all);Store.set('bb_session',un);
   await FB.registerUser(acc);
+  await FB.fetchAllUsers();
   enterApp(acc,true);
 };
 
@@ -1188,8 +1185,6 @@ $('#liGo').onclick=async()=>{
     tone(300,180,.2,'square');
     return;
   }
-  
-  // Admin login
   if(un===ADMIN_USERNAME){
     if(pw===ADMIN_PASSWORD){
       RateLimit.record('login',true);
@@ -1208,6 +1203,7 @@ $('#liGo').onclick=async()=>{
       all[ADMIN_USERNAME]=adminAcc;
       Store.set('bb_accounts',all);
       Store.set('bb_session',ADMIN_USERNAME);
+      await FB.fetchAllUsers();
       enterApp(adminAcc,false);
       return;
     }else{
@@ -1217,8 +1213,6 @@ $('#liGo').onclick=async()=>{
       return;
     }
   }
-  
-  // Regular user login
   const acc=accounts()[un];
   const err=m=>{
     RateLimit.record('login',false);
@@ -1230,6 +1224,7 @@ $('#liGo').onclick=async()=>{
   RateLimit.record('login',true);
   Store.set('bb_session',un);
   await FB.setPresence(un,true);
+  await FB.fetchAllUsers();
   enterApp(acc,false);
 };
 
@@ -1243,7 +1238,7 @@ function seedFresh(){
     {id:uid(),sys:1,t:now+1,text:'⚡ Messages sync in real-time via Firebase. Say hello!'}
   ];
   S.msgs.news=[
-    {id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 3.7 is here.**\n• 👑 New admin panel with user management\n• 💬 Private chats between users\n• 🤖 Improved AI assistant with context\n• 📞 Call users directly from profile\n• 🔒 Enhanced security with PBKDF2\n• 🛡️ Admin can delete accounts or login as users',views:'—'},
+    {id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 3.8 is here.**\n• 👑 New admin panel with user management\n• 💬 Private chats between users\n• 🤖 Improved AI assistant with context\n• 📞 Call users directly from profile\n• 🔒 Enhanced security with PBKDF2\n• 🛡️ Admin can delete accounts or login as users',views:'—'},
     {id:uid(),u:'ch',t:now-1200e3,text:'🔒 Your data is cached locally and synced to the cloud. Works offline, syncs when back online.\n📱 Lite mode for smooth performance on budget phones.',views:'—'}
   ];
   S.msgs.saved=[{id:uid(),sys:1,t:now,text:'🔖 This is your private cloud — forward anything here or write notes to yourself.'}];
@@ -1313,6 +1308,7 @@ function startFirebaseListeners(){
       sn.innerHTML = `<i></i>${onCount} online · ${totalUsers} members`;
     }
   });
+  // Global chat listener
   FB.listenMessages('global',remoteMsgs=>{
     if(!remoteMsgs.length)return;
     const localIds=new Set(S.msgs.global.filter(m=>m.id).map(m=>m.id));
@@ -1321,13 +1317,11 @@ function startFirebaseListeners(){
       if(!localIds.has(rm.id)){
         S.msgs.global.push(rm);added=true;
         const own=rm.u===S.me.un;
-        if(!own){
-          if(S.cur==='global'&&!document.hidden){sndRecv();const u=S.users[rm.u];if(u)notifPush(u,prevText(rm));}
-          else{S.unread['global']=(S.unread['global']||0)+1;}
-        }
+        if(!own && !document.hidden && S.cur==='global'){sndRecv();}
+        if(!own && S.cur!=='global'){S.unread['global']=(S.unread['global']||0)+1;}
       } else {
-        const existing = S.msgs.global.find(m => m.id === rm.id);
-        if(existing && rm.t > existing.t) {Object.assign(existing, rm);added = true;}
+        const existing = S.msgs.global.find(m=>m.id===rm.id);
+        if(existing && rm.t>existing.t){Object.assign(existing,rm);added=true;}
       }
     });
     if(added){S.msgs.global.sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
@@ -1356,6 +1350,11 @@ function startFirebaseListeners(){
   });
 }
 
+function getPrivateChatId(un1,un2){
+  const sorted=[un1,un2].sort();
+  return 'pm_'+sorted[0]+'_'+sorted[1];
+}
+
 function chatMeta(c){return{t:c.title,e:c.e,g:c.g,ver:c.ver};}
 function lastMsg(cid){const l=S.msgs[cid];return l&&l.length?l[l.length-1]:null;}
 function prevText(m){
@@ -1372,12 +1371,6 @@ function prevText(m){
   if(m.deleted)return '🚫 Deleted';
   return who+(m.text||'');
 }
-const fmtT=t=>new Date(t).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-const fmtD=t=>{const d=new Date(t),n=new Date(),y=new Date(n-864e5);
-  if(d.toDateString()===n.toDateString())return 'Today';
-  if(d.toDateString()===y.toDateString())return 'Yesterday';
-  return d.toLocaleDateString('en-GB',{day:'numeric',month:'long'});};
-const fmtDur=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 
 let searchMode='chats';
 $('#sideSearch').oninput=async e=>{
@@ -1403,11 +1396,6 @@ $('#sideSearch').oninput=async e=>{
   }
 };
 
-function getPrivateChatId(un1,un2){
-  const sorted=[un1,un2].sort();
-  return 'pm_'+sorted[0]+'_'+sorted[1];
-}
-
 function renderList(){
   if(searchMode==='users')return;
   const q=$('#sideSearch').value.toLowerCase().replace(/^@/,'');
@@ -1419,7 +1407,6 @@ function renderList(){
     c: {id, type:'channel', title:ch.name, e:ch.e||'📢', g:ch.g||['#8e2de2','#4a00e0'], ver:ch.public},
     t: lastMsg(id)?.t || 0
   }));
-  // Private chats
   const privateChats = [];
   Object.keys(S.msgs).forEach(cid=>{
     if(cid.startsWith('pm_')&&S.msgs[cid]&&S.msgs[cid].length){
@@ -1498,6 +1485,25 @@ function openChat(id){
   if(hCall){
     const isCallable = isPrivate || (isGroup && S.groupMembers[id]?.length > 0);
     hCall.style.display = isCallable ? '' : 'none';
+  }
+  // Listen for private chat messages if needed
+  if(isPrivate && !S.fbListeners['msg_'+id]){
+    FB.listenMessages(id, remoteMsgs => {
+      if(!remoteMsgs.length)return;
+      const localIds=new Set((S.msgs[id]||[]).filter(m=>m.id).map(m=>m.id));
+      let added=false;
+      remoteMsgs.forEach(rm=>{
+        if(!localIds.has(rm.id)){
+          if(!S.msgs[id])S.msgs[id]=[];
+          S.msgs[id].push(rm);added=true;
+          const own=rm.u===S.me.un;
+          if(!own && !document.hidden && S.cur===id){sndRecv();}
+          if(!own && S.cur!==id){S.unread[id]=(S.unread[id]||0)+1;}
+        }
+      });
+      if(added){S.msgs[id].sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
+    });
+    S.fbListeners['msg_'+id]=true;
   }
 }
 
@@ -1632,7 +1638,7 @@ function renderMsgs(force){
   let html='',prev=null;
   list.forEach((m,i)=>{
     const nxt=list[i+1];
-    if(!prev||new Date(m.t).toDateString()!==new Date(prev.t).toDateString())html+=`<div class="dsep"><span>${fmtD(m.t)}</span></div>`;
+    if(!prev||new Date(m.t).toDateString()!==new Date(prev.t).toDateString())html+=`<div class="dsep"><span>${new Date(m.t).toLocaleDateString('en-GB',{day:'numeric',month:'long'})}</span></div>`;
     if(m.sys){html+=`<div class="sysmsg"><span>${esc(m.text)}</span></div>`;prev=m;return;}
     const mine=m.u==='me'||m.u===S.me?.un;
     let u = mine ? S.me : (S.users[m.u] || {name:'Unknown',e:'👤',g:['#555','#333'],id:m.u});
@@ -1677,7 +1683,9 @@ function addMsg(cid,m,opts={}){
   const exists = S.msgs[cid].some(x => x.id === m.id);
   if(exists) return null;
   S.msgs[cid].push(m);persist();
-  if(cid==='global'&&(m.u==='me'||m.u===S.me?.un)&&!opts.remote&&!opts.defer){
+  const isPrivate = cid.startsWith('pm_');
+  // Send to Firebase for global or private chats
+  if((cid==='global' || isPrivate) && (m.u==='me'||m.u===S.me?.un) && !opts.remote && !opts.defer){
     FB.sendMsg(cid,m,S.me);
   }
   const active=S.cur===cid&&!document.hidden;
@@ -1700,7 +1708,7 @@ const toggleMain=()=>$('#mainBtn').classList.toggle('send',txt.value.trim().leng
 let lastTyp=0;
 txt.addEventListener('input',()=>{
   txt.style.height='auto';txt.style.height=Math.min(txt.scrollHeight,160)+'px';toggleMain();
-  if(S.cur==='global'&&Date.now()-lastTyp>1500){lastTyp=Date.now();FB.sendTyping('global',S.me.un);}
+  if(S.cur && Date.now()-lastTyp>1500){lastTyp=Date.now();if(S.cur==='global'||S.cur.startsWith('pm_'))FB.sendTyping(S.cur,S.me.un);}
   checkMentions();
 });
 txt.addEventListener('keydown',e=>{
@@ -1765,7 +1773,7 @@ function applyEmojiShortcuts(text){
   return result;
 }
 
-/* ===== AI ASSISTANT (IMPROVED) ===== */
+/* ===== AI ASSISTANT ===== */
 const AIContext = {
   history: [],
   userName: '',
@@ -1780,7 +1788,6 @@ async function getAIResponse(text){
   const lower = text.toLowerCase().trim();
   AIContext.addMessage('user', text);
   
-  // Commands
   if(lower === '/help' || lower === 'помощь'){
     return `🤖 **Доступные команды:**
 • \`/help\` — список команд
@@ -1832,7 +1839,6 @@ async function getAIResponse(text){
     return `🌐 **Перевод:**\n\n${toTranslate}\n\n_(В реальной версии здесь будет API переводчика)_`;
   }
   
-  // Contextual responses
   if(lower.includes('привет') || lower.includes('hi') || lower.includes('hello') || lower.includes('здравствуй')){
     return `🤖 Привет, ${esc(S.me.name)}! Рад тебя видеть. Чем могу помочь сегодня?`;
   }
@@ -1846,7 +1852,7 @@ async function getAIResponse(text){
     return `🤖 Пожалуйста! Обращайся ещё ⚡`;
   }
   if(lower.includes('bitabolt') || lower.includes('мессенджер')){
-    return `⚡ **Bitabolt** — это глобальный мессенджер нового поколения!\n\n🔹 Real-time синхронизация через Firebase\n🔹 Сквозное шифрование PBKDF2\n🔹 HD звонки через WebRTC\n🔹 Группы, каналы, личные чаты\n🔹 AI-ассистент (это я! 🤖)\n🔹 Админ-панель для управления\n\nВерсия 3.7 — самая мощная!`;
+    return `⚡ **Bitabolt** — это глобальный мессенджер нового поколения!\n\n🔹 Real-time синхронизация через Firebase\n🔹 Сквозное шифрование PBKDF2\n🔹 HD звонки через WebRTC\n🔹 Группы, каналы, личные чаты\n🔹 AI-ассистент (это я! 🤖)\n🔹 Админ-панель для управления\n\nВерсия 3.8 — самая мощная!`;
   }
   if(lower.includes('код') || lower.includes('code') || lower.includes('javascript') || lower.includes('python')){
     return `💻 Конечно! Что именно тебя интересует? Я могу показать примеры на:\n• JavaScript\n• Python\n• HTML/CSS\n• SQL\n\nИли попробуй команду \`/code\` для быстрого примера!`;
@@ -1883,7 +1889,6 @@ async function getAIResponse(text){
     }
   }
   
-  // Default response with context awareness
   const contextHints = AIContext.history.slice(-4).map(m=>m.text.slice(0,50)).join(' → ');
   return `🤖 Интересный вопрос! Я обработал твой запрос с учётом контекста.\n\n💡 Попробуй:\n• Задать более конкретный вопрос\n• Использовать команды: /help, /code, /joke\n• Спросить о Bitabolt, коде, идеях\n\n_(В полной версии здесь будет интеграция с GPT/Claude API)_`;
 }
@@ -1926,7 +1931,6 @@ function composerSend(){
   }
   if(!v){toast('Message is empty','⚠️');return;}
   
-  // AI Assistant handling
   if(S.cur === 'ai_assistant'){
     const userMsg = {u:'me',text:v,st:'sent'};
     if(S.reply){userMsg.reply=S.reply;}
@@ -2090,7 +2094,7 @@ function deleteMessage(m){
 }
 function deleteForEveryone(m){
   m.deleted=true;m.text='🚫 Deleted';m.type='deleted';
-  if(S.cur==='global')FB.deleteMessage(S.cur,m.id);
+  if(S.cur==='global'||S.cur.startsWith('pm_'))FB.deleteMessage(S.cur,m.id);
   persist();renderMsgs();toast('Deleted for everyone','🗑️');
 }
 function saveToSaved(m){
@@ -2141,9 +2145,9 @@ function react(m,e){
   const myId=S.me?S.me.un:'me';
   const i=m.rx[e].indexOf(myId);
   if(i>-1){m.rx[e].splice(i,1);if(!m.rx[e].length)delete m.rx[e];
-    if(S.cur==='global')FB.removeReaction(S.cur,m.id,myId);}
+    if(S.cur==='global'||S.cur.startsWith('pm_'))FB.removeReaction(S.cur,m.id,myId);}
   else{m.rx[e].push(myId);tone(900,1400,.07);
-    if(S.cur==='global')FB.sendReaction(S.cur,m.id,e,myId);}
+    if(S.cur==='global'||S.cur.startsWith('pm_'))FB.sendReaction(S.cur,m.id,e,myId);}
   persist();renderMsgs();
 }
 
@@ -2357,7 +2361,6 @@ function openForward(m){
   });
 }
 
-/* ===== PROFILE WITH ACTION BUTTONS ===== */
 function showProfile(uidp){
   if(!uidp||uidp==='ch')return;
   if(uidp==='me'||uidp===S.me?.un){showMyProfile();return;}
@@ -2387,6 +2390,25 @@ function openPrivateChat(otherUn){
     const u = S.users[otherUn] || {name:otherUn,e:'👤',g:['#555','#333']};
     S.msgs[chatId].push({id:uid(),sys:1,t:Date.now(),text:`🔒 Private chat with ${u.name}. Messages are only visible to you two.`});
     persist();
+  }
+  // Ensure Firebase listener is set up
+  if(!S.fbListeners['msg_'+chatId]){
+    FB.listenMessages(chatId, remoteMsgs => {
+      if(!remoteMsgs.length)return;
+      const localIds=new Set((S.msgs[chatId]||[]).filter(m=>m.id).map(m=>m.id));
+      let added=false;
+      remoteMsgs.forEach(rm=>{
+        if(!localIds.has(rm.id)){
+          if(!S.msgs[chatId])S.msgs[chatId]=[];
+          S.msgs[chatId].push(rm);added=true;
+          const own=rm.u===S.me.un;
+          if(!own && !document.hidden && S.cur===chatId){sndRecv();}
+          if(!own && S.cur!==chatId){S.unread[chatId]=(S.unread[chatId]||0)+1;}
+        }
+      });
+      if(added){S.msgs[chatId].sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
+    });
+    S.fbListeners['msg_'+chatId]=true;
   }
   renderList();
   openChat(chatId);
@@ -2600,9 +2622,7 @@ ${userList.map(([un, u])=>{
         const all = accounts();
         delete all[targetUn];
         Store.set('bb_accounts', all);
-        // Remove from Firebase
         await FB.deleteUser(targetUn);
-        // Remove user's messages from local storage
         Object.keys(S.msgs).forEach(cid=>{
           S.msgs[cid] = S.msgs[cid].filter(m=>m.u !== targetUn);
         });
@@ -2653,7 +2673,7 @@ function paintSettings(){
 <button class="st-row" data-v="data"><span class="st-ico" style="background:#00a884">${ic('db')}</span><span class="st-t"><b>Data & Storage</b><span>Firebase RTDB + Storage</span></span>${ic('chev','chev')}</button>
 <button class="st-row" data-v="lang"><span class="st-ico" style="background:#3b82f6">${ic('globe')}</span><span class="st-t"><b>Language</b><span>English</span></span>${ic('chev','chev')}</button>
 <div class="st-sec">Support</div>
-<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v3.7 · Firebase</span></span>${ic('chev','chev')}</button>`;
+<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v3.8 · Firebase</span></span>${ic('chev','chev')}</button>`;
   if(setView==='profile')body=`
 <div class="st-me" style="flex-direction:column;text-align:center"><div class="c-ava" id="pfAva" style="width:82px;height:82px;font-size:36px;${S.me.avatar?`background:url(${S.me.avatar}) center/cover`:`background:linear-gradient(135deg,${S.me.g[0]},${S.me.g[1]})`}">${S.me.avatar?'':S.me.e}</div>
 <button class="btn-ghost" id="pfUpload" style="width:auto;padding:8px 16px;margin-top:8px;font-size:12px">📷 Upload photo</button>
@@ -2707,7 +2727,7 @@ ${[['🇬🇧','en','English'],['🇷🇺','ru','Русский'],['🇪🇸','e
 <div style="text-align:center;padding:18px 0 7px"><div class="al-logo" style="margin:0 auto 12px;width:60px;height:60px"><svg viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
 <div style="font-family:var(--disp);font-weight:900;font-size:18px">BITA<span style="color:var(--a1)">BOLT</span></div>
 <div style="color:var(--tx3);font-size:9.5px;letter-spacing:3px;margin:5px 0 16px">THE GLOBAL MESSENGER</div></div>
-<div class="p-row"><div class="pr-ico">${ic('info')}</div><div><b>Version 3.7</b><span>build 02.08.2026</span></div></div>
+<div class="p-row"><div class="pr-ico">${ic('info')}</div><div><b>Version 3.8</b><span>build 08.01.2026</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('globe')}</div><div><b>Real-time cloud sync</b><span>Firebase Realtime Database</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('zap')}</div><div><b>Lite mode</b><span>Optimized for weak phones</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('lock')}</div><div><b>Local + Cloud storage</b><span>Works offline, syncs when online</span></div></div>
@@ -2823,7 +2843,7 @@ function notifPush(u,text){
   $('#toasts').appendChild(n);setTimeout(()=>{n.style.transition='.3s';n.style.opacity='0';setTimeout(()=>n.remove(),300)},4500);
 }
 
-/* ===== CALL MANAGER (FIXED) ===== */
+/* ===== CALL MANAGER ===== */
 const CallManager = {
   initialized: false,
   init(){
@@ -3013,7 +3033,7 @@ document.addEventListener('keydown',e=>{
   }
 })();
 
-console.log('✅ Bitabolt v3.7 loaded with admin panel, private chats, improved AI');
+console.log('✅ Bitabolt v3.8 loaded with admin panel, private chats, improved AI');
 </script>
 </body>
 </html>
