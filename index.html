@@ -533,6 +533,9 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .call-peer .cp-ava{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 14px 40px rgba(255,39,67,.45)}
 .call-peer .cp-name{position:absolute;left:14px;bottom:12px;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:5px 12px;border-radius:12px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:7px}
 .call-peer.me{border-color:rgba(47,213,97,.4)}
+.call-peer .local-video{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;border-radius:22px}
+.call-peer .remote-video{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;border-radius:22px}
+.call-peer .cp-ava.off{display:none}
 .call-bottom{position:relative;z-index:2;padding:18px 24px 28px;display:flex;flex-direction:column;gap:14px;align-items:center}
 .call-controls{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
 .cc-btn{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:#fff;transition:.2s;position:relative}
@@ -667,7 +670,7 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 </div>
 </div>
 <button class="btn-pri" id="liGo">Log in</button>
-<p class="a-note">🛡️ Protected with rate limiting & PBKDF2 verification.<br><small style="color:var(--tx3)">Admin access: <b>@admin</b> / <b>admin123</b></small></p>
+<p class="a-note">🛡️ Protected with rate limiting & PBKDF2 verification.<br><small style="color:var(--tx3)">Admin: <b>@admin228</b></small></p>
 </section>
 </div>
 </div>
@@ -746,6 +749,7 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 <div class="call-top">
 <div class="ct-sec" id="csTitle">Call</div>
 <div class="ct-timer" id="csTimer">00:00</div>
+<button class="icon-btn" id="csEndCall" style="color:var(--a1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 10a5 5 0 0 1 5 5v3a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-3M6 10a5 5 0 0 0-5 5v3a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-3"/><path d="M12 2v8M9 8l3 3 3-3"/></svg></button>
 </div>
 <div class="call-peers grid-1" id="csPeers"></div>
 <div class="call-bottom">
@@ -759,7 +763,7 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-import { getDatabase, ref, set, get, push, onValue, onDisconnect, update, remove, limitToLast, query, off } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
+import { getDatabase, ref, set, get, push, onValue, onDisconnect, update, remove, limitToLast, query, off, goOffline } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
 import { getStorage, ref as sref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -859,6 +863,7 @@ const S={
   groups:Store.get('bb_groups',{}),
   groupMembers:Store.get('bb_group_members',{}),
   channels:Store.get('bb_channels',{}),
+  channelSubs:Store.get('bb_channel_subs',{}),
   archived:Store.get('bb_archived',{}),
   slowMode:Store.get('bb_slowmode',{}),
   lastMsgTime:{},
@@ -867,14 +872,22 @@ const S={
   messageQueue:[],
   isAdmin:false,
   aiContext:[],
-  fbListeners:{}
+  fbListeners:{},
+  _onlineCount:0,
+  _totalUsers:0,
+  _callListeners:{}
 };
 
 const kU=()=>'bb_u_'+(S.me?.un||'anon'), kM=()=>'bb_m_'+(S.me?.un||'anon'), kS=()=>'bb_s_'+(S.me?.un||'anon');
 
 function persist(){
-  try{localStorage.setItem(kM(),JSON.stringify(S.msgs));}
-  catch(e){toast('Storage error — some messages not saved','⚠️');}
+  try{
+    localStorage.setItem(kM(),JSON.stringify(S.msgs));
+    Store.set('bb_groups', S.groups);
+    Store.set('bb_group_members', S.groupMembers);
+    Store.set('bb_channels', S.channels);
+    Store.set('bb_channel_subs', S.channelSubs);
+  } catch(e){ toast('Storage error — some data not saved','⚠️'); }
 }
 
 const CHATS={
@@ -906,8 +919,8 @@ const EMOJI_SHORTCUTS = {
   'XD':'😆','xD':'😆',':\'(':'😢',':fire:':'🔥',':bolt:':'⚡'
 };
 
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'admin123';
+const ADMIN_USERNAME = 'admin228';
+const ADMIN_PASSWORD = 'admin228';
 
 function isAdminUser(un){ return un === ADMIN_USERNAME; }
 
@@ -934,6 +947,9 @@ const FB={
       await set(presRef,{online:true,lastSeen:Date.now()});
       onDisconnect(presRef).set({online:false,lastSeen:Date.now()});
       await set(ref(db,'usernames/'+un),{owner:un,t:Date.now()});
+      if(un===ADMIN_USERNAME){
+        await set(ref(db,'admins/'+un), {admin:true, granted:Date.now()});
+      }
     }catch(e){console.warn('[FB] register:',e);}
   },
   async checkUsername(un){
@@ -963,11 +979,19 @@ const FB={
     try{
       this.listeners.presence=onValue(ref(db,'users'),snap=>{
         const data=snap.val()||{},onlineMap={};
+        let total=0,onCount=0;
         Object.entries(data).forEach(([uid,v])=>{
-          if(v.presence)onlineMap[uid]=v.presence;
+          if(v.presence){
+            onlineMap[uid]=v.presence;
+            if(v.presence.online) onCount++;
+            total++;
+          }
           if(v.profile)S.users[uid]={...S.users[uid],...v.profile,id:uid};
         });
-        S.online=onlineMap;cb(onlineMap);
+        S.online=onlineMap;
+        S._onlineCount=onCount;
+        S._totalUsers=total;
+        cb(onlineMap);
       });
     }catch(e){console.warn('[FB] presence listen:',e);}
   },
@@ -1040,6 +1064,7 @@ const FB={
     try{
       await remove(ref(db,'users/'+sanitizePath(un)));
       await remove(ref(db,'usernames/'+sanitizePath(un)));
+      if(un===ADMIN_USERNAME) await remove(ref(db,'admins/'+un));
       return true;
     }catch(e){return false;}
   },
@@ -1052,7 +1077,6 @@ const FB={
     const sn=$('#sbNet');
     if(sn&&!online){sn.classList.add('off');sn.innerHTML='<i></i>offline';}
   },
-  // Fetch all users once
   async fetchAllUsers(){
     try{
       const snap=await get(ref(db,'users'));
@@ -1063,6 +1087,46 @@ const FB={
       });
       Store.set(kU(), S.users);
     }catch(e){console.warn('[FB] fetchUsers:',e);}
+  },
+  async getChannelSubs(channelId){
+    try{
+      const snap=await get(ref(db,'channels/'+sanitizePath(channelId)+'/subs'));
+      return snap.val()||{};
+    }catch(e){return{};}
+  },
+  async subscribeChannel(channelId,un){
+    try{await set(ref(db,'channels/'+sanitizePath(channelId)+'/subs/'+sanitizePath(un)),{t:Date.now()});}catch(e){}
+  },
+  async unsubscribeChannel(channelId,un){
+    try{await remove(ref(db,'channels/'+sanitizePath(channelId)+'/subs/'+sanitizePath(un)));}catch(e){}
+  },
+  // === WebRTC Signaling ===
+  async sendCallSignal(target, signal){
+    const path = 'calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un);
+    await set(ref(db, path), signal);
+    await set(ref(db, path+'/timestamp'), Date.now());
+  },
+  listenCallSignals(cb){
+    const path = 'calls/'+sanitizePath(S.me.un);
+    this.listeners.calls = onValue(ref(db, path), snap=>{
+      const data = snap.val()||{};
+      const signals = [];
+      Object.entries(data).forEach(([from, signal])=>{
+        if(from !== 'timestamp' && from !== 'pending' && from !== 'active') {
+          signals.push({from, ...signal});
+        }
+      });
+      if(signals.length) cb(signals);
+    });
+  },
+  async clearCallSignals(){
+    try{await remove(ref(db, 'calls/'+sanitizePath(S.me.un)));}catch(e){}
+  },
+  async setCallState(target, state){
+    await set(ref(db, 'calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un)+'/state'), state);
+  },
+  async endCall(target){
+    await remove(ref(db, 'calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un)));
   }
 };
 
@@ -1238,12 +1302,12 @@ function seedFresh(){
     {id:uid(),sys:1,t:now+1,text:'⚡ Messages sync in real-time via Firebase. Say hello!'}
   ];
   S.msgs.news=[
-    {id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 3.8 is here.**\n• 👑 New admin panel with user management\n• 💬 Private chats between users\n• 🤖 Improved AI assistant with context\n• 📞 Call users directly from profile\n• 🔒 Enhanced security with PBKDF2\n• 🛡️ Admin can delete accounts or login as users',views:'—'},
-    {id:uid(),u:'ch',t:now-1200e3,text:'🔒 Your data is cached locally and synced to the cloud. Works offline, syncs when back online.\n📱 Lite mode for smooth performance on budget phones.',views:'—'}
+    {id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 3.8 is here.**\n• 👑 Admin panel\n• 💬 Private chats\n• 🤖 AI assistant\n• 📞 WebRTC calls\n• 🔒 PBKDF2 security'},
+    {id:uid(),u:'ch',t:now-1200e3,text:'📞 **WebRTC Calls** now available! Call any user with real audio/video.'}
   ];
   S.msgs.saved=[{id:uid(),sys:1,t:now,text:'🔖 This is your private cloud — forward anything here or write notes to yourself.'}];
   S.msgs.ai_assistant=[
-    {id:uid(),sys:1,t:now,text:'🤖 Привет! Я твой AI-ассистент. Я могу:\n\n• 💬 Отвечать на вопросы\n• 💻 Помогать с кодом\n• 🌐 Переводить текст\n• 📊 Анализировать данные\n• 🎨 Генерировать идеи\n\nПросто напиши что-нибудь! Команды: /help, /clear, /stats'}
+    {id:uid(),sys:1,t:now,text:'🤖 Привет! Я твой AI-ассистент. Команды: /help, /clear, /stats, /joke, /code'}
   ];
   persist();
 }
@@ -1262,6 +1326,7 @@ function enterApp(acc,fresh){
   S.groups=Store.get('bb_groups',{});
   S.groupMembers=Store.get('bb_group_members',{});
   S.channels=Store.get('bb_channels',{});
+  S.channelSubs=Store.get('bb_channel_subs',{});
   S.archived=Store.get('bb_archived',{});
   S.slowMode=Store.get('bb_slowmode',{});
   if(!S.msgs.global.length&&!S.msgs.news.length)seedFresh();
@@ -1325,6 +1390,20 @@ function startFirebaseListeners(){
       }
     });
     if(added){S.msgs.global.sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
+  });
+  // News channel listener
+  FB.listenMessages('news',remoteMsgs=>{
+    if(!remoteMsgs.length)return;
+    const localIds=new Set(S.msgs.news.filter(m=>m.id).map(m=>m.id));
+    let added=false;
+    remoteMsgs.forEach(rm=>{
+      if(!localIds.has(rm.id)){
+        S.msgs.news.push(rm);added=true;
+        if(S.cur==='news'&&!document.hidden)sndRecv();
+        if(S.cur!=='news'){S.unread['news']=(S.unread['news']||0)+1;}
+      }
+    });
+    if(added){S.msgs.news.sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
   });
   FB.listenTyping('global',typingData=>{
     const typers=Object.entries(typingData).filter(([u,d])=>u!==S.me.un&&Date.now()-d.t<3000).map(([u])=>u);
@@ -1399,14 +1478,21 @@ $('#sideSearch').oninput=async e=>{
 function renderList(){
   if(searchMode==='users')return;
   const q=$('#sideSearch').value.toLowerCase().replace(/^@/,'');
+  
   const groupChats = Object.entries(S.groups).map(([id, g]) => ({
     c: {id, type:'group', title:g.name, e:'👥', g:['#4a6cf7','#6a4cf7']},
     t: lastMsg(id)?.t || 0
   }));
-  const channelChats = Object.entries(S.channels).map(([id, ch]) => ({
-    c: {id, type:'channel', title:ch.name, e:ch.e||'📢', g:ch.g||['#8e2de2','#4a00e0'], ver:ch.public},
-    t: lastMsg(id)?.t || 0
-  }));
+  
+  const channelChats = Object.entries(S.channels).map(([id, ch]) => {
+    const subs = S.channelSubs[id] || [];
+    const isSub = subs.includes(S.me?.un);
+    return {
+      c: {id, type:'channel', title:ch.name+' '+(!isSub?'🔓':'✅'), e:ch.e||'📢', g:ch.g||['#8e2de2','#4a00e0'], ver:ch.public, subs:subs.length},
+      t: lastMsg(id)?.t || 0
+    };
+  });
+  
   const privateChats = [];
   Object.keys(S.msgs).forEach(cid=>{
     if(cid.startsWith('pm_')&&S.msgs[cid]&&S.msgs[cid].length){
@@ -1419,20 +1505,23 @@ function renderList(){
       });
     }
   });
+  
   const rows = [
     ...Object.values(CHATS).map(c=>({c,t:lastMsg(c.id)?lastMsg(c.id).t:0})),
     ...privateChats,
     ...groupChats,
     ...channelChats
-  ].filter(({c})=>!q||chatMeta(c).t.toLowerCase().includes(q))
+  ].filter(({c})=>!q||chatMeta(c).title.toLowerCase().includes(q))
   .sort((a,b)=>{
     if(b.c.id==='global') return 1;
     if(a.c.id==='global') return -1;
     return b.t-a.t;
   });
-  const onCount=Object.values(S.online).filter(p=>p.online).length;
-  const totalUsers = Object.keys(S.users).length + 1;
+  
+  const onCount = S._onlineCount || Object.values(S.online).filter(p=>p.online).length;
+  const totalUsers = S._totalUsers || Object.keys(S.users).length + 1;
   $('#chatCount').textContent=rows.length+' · '+onCount+'/'+totalUsers+' online';
+  
   $('#chatList').innerHTML=rows.map(({c},i)=>{
     const m=chatMeta(c),lm=lastMsg(c.id),un=S.unread[c.id]||0;
     const ty=S.typing[c.id]&&Date.now()-S.typing[c.id].t<3500?S.typing[c.id].u:null;
@@ -1440,25 +1529,28 @@ function renderList(){
     const isChannel = c.type === 'channel';
     const isPrivate = c.type === 'private';
     const isArchived = S.archived[c.id];
+    const subsCount = c.subs || 0;
     return `<div class="chat ${S.cur===c.id?'on':''}" data-id="${c.id}" style="animation-delay:${i*40}ms;${isArchived?'opacity:.5;':''}">
 <div class="c-ava" style="background:linear-gradient(135deg,${m.g[0]},${m.g[1]})">${isGroup?'👥':isChannel?'📢':m.e}${c.id==='global'?'<span class="on-dot"></span>':''}</div>
 <div class="c-body">
-<div class="c-top"><span class="c-name">${esc(m.t)}${m.ver?'<span class="vbadge"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>':''}${isPrivate?' 💬':''}${isGroup?' 👥':''}${isChannel?' 📢':''}</span>
+<div class="c-top"><span class="c-name">${esc(m.title)}${m.ver?'<span class="vbadge"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>':''}${isPrivate?' 💬':''}${isGroup?' 👥':''}${isChannel?' 📢':''}</span>
 <span class="c-time">${lm?fmtT(lm.t):''}</span></div>
 <div class="c-sub"><span class="c-prev">${ty?`<span class="typ">typing<span class="typing-wave"><i></i><i></i><i></i></span></span>`:esc(prevText(lm))||'<i>No messages yet</i>'}</span>
-${un?`<span class="c-badge">${un}</span>`:''}</div>
+${un?`<span class="c-badge">${un}</span>`:''}
+${isChannel && subsCount ? `<span style="font-size:9px;color:var(--tx3);margin-left:4px">${subsCount}👥</span>` : ''}
+</div>
 </div></div>`;
   }).join('');
   $$('#chatList .chat').forEach(el=>el.onclick=()=>openChat(el.dataset.id));
 }
 
 const msgsEl=$('#msgs');
-function membersCount(){return Object.keys(S.users).length + 1;}
 
 function openChat(id){
   S.cur=id;S.reply=null;S.edit=null;hideReply();
   S.unread[id]=0;S.search={q:'',idx:0,ids:[]};
   $('#searchBar').classList.remove('on');$('#inSearch').value='';
+  
   const isGroup = S.groups && S.groups[id];
   const isChannel = S.channels && S.channels[id];
   const isPrivate = id.startsWith('pm_');
@@ -1473,20 +1565,22 @@ function openChat(id){
   }
   else c = CHATS[id];
   if(!c){ toast('Chat not found','⚠️'); return; }
+  
   const m=chatMeta(c);
   $('#headAva').textContent=m.e;$('#headAva').style.background=`linear-gradient(135deg,${m.g[0]},${m.g[1]})`;
-  $('#headTitle').innerHTML=esc(m.t)+(m.ver?'<span class="vbadge"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>':'')+(isPrivate?' 💬':isGroup?' 👥':isChannel?' 📢':'');
+  $('#headTitle').innerHTML=esc(m.title)+(m.ver?'<span class="vbadge"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>':'')+(isPrivate?' 💬':isGroup?' 👥':isChannel?' 📢':'');
   paintHead();renderMsgs(true);renderList();
   $('#app').classList.add('inchat');
   $('#fab').classList.remove('on');$('#fabB').classList.add('hidden');
   $('#txt').placeholder=id==='saved'?'Note to yourself':'Message';
   if(innerWidth>940&&matchMedia('(pointer:fine)').matches)$('#txt').focus();
+  
   const hCall = document.getElementById('hCall');
   if(hCall){
     const isCallable = isPrivate || (isGroup && S.groupMembers[id]?.length > 0);
     hCall.style.display = isCallable ? '' : 'none';
   }
-  // Listen for private chat messages if needed
+  
   if(isPrivate && !S.fbListeners['msg_'+id]){
     FB.listenMessages(id, remoteMsgs => {
       if(!remoteMsgs.length)return;
@@ -1505,6 +1599,24 @@ function openChat(id){
     });
     S.fbListeners['msg_'+id]=true;
   }
+  
+  if(isChannel && !S.fbListeners['msg_'+id]){
+    FB.listenMessages(id, remoteMsgs => {
+      if(!remoteMsgs.length)return;
+      const localIds=new Set((S.msgs[id]||[]).filter(m=>m.id).map(m=>m.id));
+      let added=false;
+      remoteMsgs.forEach(rm=>{
+        if(!localIds.has(rm.id)){
+          if(!S.msgs[id])S.msgs[id]=[];
+          S.msgs[id].push(rm);added=true;
+          if(!document.hidden && S.cur===id){sndRecv();}
+          if(S.cur!==id){S.unread[id]=(S.unread[id]||0)+1;}
+        }
+      });
+      if(added){S.msgs[id].sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
+    });
+    S.fbListeners['msg_'+id]=true;
+  }
 }
 
 function paintHead(){
@@ -1516,6 +1628,7 @@ function paintHead(){
   const gc = isGroup ? S.groups[S.cur] : null;
   const cc = isChannel ? S.channels[S.cur] : null;
   if(!c && !gc && !cc && !isPrivate){ return; }
+  
   const ty=S.typing[S.cur];
   if(ty&&Date.now()-ty.t<3500){
     const typers = Array.isArray(ty.u) ? ty.u : [ty.u];
@@ -1526,21 +1639,24 @@ function paintHead(){
     const suffix = typers.length > 3 ? ` +${typers.length-3}` : '';
     $('#headSub').innerHTML=`<span class="typ">${names.join(', ')}${suffix} typing<span class="tdots"><i></i><i></i><i></i></span></span>`;return;
   }
+  
   if(isGroup){
     const members = S.groupMembers[S.cur] || [S.me.un];
     const onlineCount = members.filter(m => S.online[m]?.online).length;
     $('#headSub').textContent = `${onlineCount}/${members.length} online`;
   }else if(isChannel){
+    const subs = S.channelSubs[S.cur] || [];
     const members = S.groupMembers[S.cur] || [];
-    $('#headSub').textContent = `${members.length} members · official`;
+    $('#headSub').textContent = `${subs.length} subscribers · ${members.length} admins`;
   }else if(isPrivate){
     const parts=S.cur.replace('pm_','').split('_');
     const other=parts.find(p=>p!==S.me.un);
     const isOn=S.online[other]?.online;
     $('#headSub').innerHTML = isOn ? '<span class="online-badge"><i></i> online</span>' : 'offline';
   }else if(c?.type==='global'){
-    const onCount=Object.values(S.online).filter(p=>p.online).length;
-    $('#headSub').textContent=`${onCount} online · ${membersCount()} members`;
+    const onCount = S._onlineCount || Object.values(S.online).filter(p=>p.online).length;
+    const totalUsers = S._totalUsers || Object.keys(S.users).length + 1;
+    $('#headSub').textContent=`${onCount} online · ${totalUsers} members`;
   }
   else if(c?.type==='channel')$('#headSub').textContent='official';
   else if(c?.type==='saved')$('#headSub').textContent='only you can see this';
@@ -1615,6 +1731,17 @@ function emptyHTML(){
 <h3>Chat with ${esc(u.name)}</h3><p>This is a private conversation. Messages are only visible to you two.</p>
 <div class="e-chips"><button data-act="hello">👋 Say hello</button></div></div>`;
   }
+  if(S.channels[S.cur]){
+    const ch = S.channels[S.cur];
+    const subs = S.channelSubs[S.cur] || [];
+    const isSub = subs.includes(S.me?.un);
+    return `<div class="empty"><div class="e-orb"><i></i><i></i>📢</div>
+<h3>${esc(ch.name)}</h3><p>${ch.desc||'Channel description'}</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+<button class="btn-pri" style="width:auto;padding:10px 24px;margin:0" id="subBtn">${isSub?'✅ Subscribed':'🔔 Subscribe'}</button>
+<button class="btn-ghost" style="width:auto;padding:10px 24px;margin:0" onclick="showChannelInfo('${S.cur}')">ℹ️ Info</button>
+</div></div>`;
+  }
   return '';
 }
 
@@ -1631,6 +1758,12 @@ function renderMsgs(force){
   if(!S.cur || !S.msgs[S.cur]){
     msgsEl.innerHTML=S.cur?emptyHTML():'';
     updatePinned();
+    if(S.cur && S.channels[S.cur]){
+      const subBtn = document.getElementById('subBtn');
+      if(subBtn){
+        subBtn.onclick = () => toggleSubscribe(S.cur);
+      }
+    }
     return;
   }
   const list=S.msgs[S.cur]||[],hi=S.search.q||'';
@@ -1684,8 +1817,15 @@ function addMsg(cid,m,opts={}){
   if(exists) return null;
   S.msgs[cid].push(m);persist();
   const isPrivate = cid.startsWith('pm_');
-  // Send to Firebase for global or private chats
-  if((cid==='global' || isPrivate) && (m.u==='me'||m.u===S.me?.un) && !opts.remote && !opts.defer){
+  const isChannel = !!S.channels[cid];
+  if((cid==='global' || cid==='news' || isPrivate || isChannel) && (m.u==='me'||m.u===S.me?.un) && !opts.remote && !opts.defer){
+    if(isChannel){
+      const subs = S.channelSubs[cid] || [];
+      if(!subs.includes(S.me?.un) && !opts._force){
+        toast('🔔 Subscribe to this channel to post','⚠️');
+        return null;
+      }
+    }
     FB.sendMsg(cid,m,S.me);
   }
   const active=S.cur===cid&&!document.hidden;
@@ -1702,6 +1842,49 @@ function addMsg(cid,m,opts={}){
   else if(opts.remote){sndRecv();}
   renderList();return m;
 }
+
+async function toggleSubscribe(channelId){
+  const subs = S.channelSubs[channelId] || [];
+  const idx = subs.indexOf(S.me?.un);
+  if(idx > -1){
+    subs.splice(idx, 1);
+    await FB.unsubscribeChannel(channelId, S.me?.un);
+    toast('Unsubscribed from channel','🔕');
+  }else{
+    subs.push(S.me?.un);
+    await FB.subscribeChannel(channelId, S.me?.un);
+    toast('Subscribed to channel!','🔔');
+  }
+  S.channelSubs[channelId] = subs;
+  Store.set('bb_channel_subs', S.channelSubs);
+  renderList();
+  if(S.cur === channelId) renderMsgs(true);
+}
+
+window.showChannelInfo = function(channelId){
+  const ch = S.channels[channelId];
+  if(!ch) return;
+  const subs = S.channelSubs[channelId] || [];
+  const isSub = subs.includes(S.me?.un);
+  openModal(`<div class="md-head"><b>📢 Channel Info</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+<div class="md-body">
+<div class="p-ava" style="background:linear-gradient(135deg,${ch.g?ch.g[0]:'#8e2de2'},${ch.g?ch.g[1]:'#4a00e0'})">📢</div>
+<div class="p-name">${esc(ch.name)}</div>
+<div class="p-sub">${subs.length} subscribers</div>
+<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><b>@${esc(ch.username)}</b><span>Channel link</span></div></div>
+${ch.desc?`<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7Z"/><circle cx="12" cy="9" r="2.5"/></svg></div><div><b>${esc(ch.desc)}</b><span>description</span></div></div>`:''}
+<div style="display:flex;gap:8px;margin-top:12px">
+<button class="pa1" id="chanSubBtn" style="flex:1">${isSub?'✅ Subscribed':'🔔 Subscribe'}</button>
+<button class="pa2" id="chanCloseBtn" style="flex:1">Close</button>
+</div>
+</div>`);
+  $('#chanSubBtn').onclick=()=>{
+    closeModal();
+    toggleSubscribe(channelId);
+    setTimeout(()=>showChannelInfo(channelId), 300);
+  };
+  $('#chanCloseBtn').onclick=closeModal;
+};
 
 const txt=$('#txt');
 const toggleMain=()=>$('#mainBtn').classList.toggle('send',txt.value.trim().length>0||(S.pendingImg!==null&&S.pendingImg!==undefined)||(S.pendingVideo!==null&&S.pendingVideo!==undefined));
@@ -1889,7 +2072,6 @@ async function getAIResponse(text){
     }
   }
   
-  const contextHints = AIContext.history.slice(-4).map(m=>m.text.slice(0,50)).join(' → ');
   return `🤖 Интересный вопрос! Я обработал твой запрос с учётом контекста.\n\n💡 Попробуй:\n• Задать более конкретный вопрос\n• Использовать команды: /help, /code, /joke\n• Спросить о Bitabolt, коде, идеях\n\n_(В полной версии здесь будет интеграция с GPT/Claude API)_`;
 }
 
@@ -2317,8 +2499,10 @@ function openCreateChannel(){
     const gradients = [['#8e2de2','#4a00e0'],['#ff2743','#ff6a2b'],['#36d1dc','#5b86e5'],['#11998e','#38ef7d']];
     S.channels[id] = {name, username:un, desc, public:true, e:'📢', g:pick(gradients), created:Date.now(), admin:S.me.un};
     S.groupMembers[id] = [S.me.un];
+    S.channelSubs[id] = [S.me.un];
     Store.set('bb_channels', S.channels);
     Store.set('bb_group_members', S.groupMembers);
+    Store.set('bb_channel_subs', S.channelSubs);
     closeModal();
     toast('Channel created!','📢');
     renderList();
@@ -2350,14 +2534,14 @@ function vote(mid,idx){
 }
 function openForward(m){
   const rows=Object.values(CHATS).map(c=>{const mt=chatMeta(c);
-    return `<div class="mem-row" data-c="${c.id}"><div class="c-ava" style="background:linear-gradient(135deg,${mt.g[0]},${mt.g[1]})">${mt.e}</div><div><b>${esc(mt.t)}</b><span>${c.type==='global'?'global room':c.type==='channel'?'channel':'private'}</span></div></div>`;}).join('');
+    return `<div class="mem-row" data-c="${c.id}"><div class="c-ava" style="background:linear-gradient(135deg,${mt.g[0]},${mt.g[1]})">${mt.e}</div><div><b>${esc(mt.title)}</b><span>${c.type==='global'?'global room':c.type==='channel'?'channel':'private'}</span></div></div>`;}).join('');
   openModal(`<div class="md-head"><b>↪ Forward</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="md-body">${rows}</div>`);
   $$('#modalRoot .mem-row').forEach(r=>r.onclick=()=>{
     const cid=r.dataset.c;
-    if(cid==='news'){toast('Official channel — only admins','⚠️');return;}
+    if(cid==='news' && !S.isAdmin){toast('Official channel — admins only','⚠️');return;}
     closeModal();
     addMsg(cid,{...m,id:uid(),u:'me',st:'sent',t:Date.now(),forward:{from:m.u==='me'||m.u===S.me?.un?S.me.name:((S.users[m.u]||{}).name||'?')},rx:null});
-    toast('Forwarded → '+esc(chatMeta(CHATS[cid])?.t||cid),'↪');openChat(cid);
+    toast('Forwarded → '+esc(chatMeta(CHATS[cid])?.title||cid),'↪');openChat(cid);
   });
 }
 
@@ -2380,7 +2564,7 @@ ${u.bio?`<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill="n
 </div>
 </div>`);
   $('#pfMsg').onclick=()=>{closeModal();openPrivateChat(uidp);};
-  $('#pfCall').onclick=()=>{closeModal();openPrivateChat(uidp);setTimeout(()=>startCallSim(uidp,'audio'),300);};
+  $('#pfCall').onclick=()=>{closeModal();openPrivateChat(uidp);setTimeout(()=>CallManager.startCall(uidp, 'audio'), 500);};
 }
 
 function openPrivateChat(otherUn){
@@ -2391,7 +2575,6 @@ function openPrivateChat(otherUn){
     S.msgs[chatId].push({id:uid(),sys:1,t:Date.now(),text:`🔒 Private chat with ${u.name}. Messages are only visible to you two.`});
     persist();
   }
-  // Ensure Firebase listener is set up
   if(!S.fbListeners['msg_'+chatId]){
     FB.listenMessages(chatId, remoteMsgs => {
       if(!remoteMsgs.length)return;
@@ -2465,12 +2648,16 @@ ${members.map(m => {
     $('#modalRoot .mem-row').forEach(r=>r.onclick=()=>{showProfile(r.dataset.u);});
     return;
   }
+  if(isChannel){
+    showChannelInfo(S.cur);
+    return;
+  }
   if(c?.type!=='saved' && c?.type!=='ai'){
     const m=chatMeta(c),mem=membersCount();
     const onCount=Object.values(S.online).filter(p=>p.online).length;
     openModal(`<div class="md-head"><b>${c.type==='channel'?'Channel info':'Chat info'}</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
 <div class="md-body"><div class="p-ava" style="background:linear-gradient(135deg,${m.g[0]},${m.g[1]})">${m.e}</div>
-<div class="p-name">${esc(m.t)}${m.ver?'<span class="vbadge"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>':''}</div>
+<div class="p-name">${esc(m.title)}${m.ver?'<span class="vbadge"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>':''}</div>
 <div class="p-sub">${c.type==='global'?onCount+' online · '+mem+' members':c.desc}</div>
 </div>`);
   }else toast('Saved Messages — your private cloud','🔖');
@@ -2523,6 +2710,7 @@ $('#burger').onclick=e=>{
 <button class="ctx-i" data-a="prof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>My Profile</button>
 <button class="ctx-i" data-a="saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4V3Z"/></svg>Saved Messages</button>
 <button class="ctx-i" data-a="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l2 2"/></svg>🤖 AI Assistant</button>
+<button class="ctx-i" data-a="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"/><path d="M8 8h8M8 13h6"/></svg>📣 News Channel</button>
 <button class="ctx-i" data-a="readall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 12 4 4L19 4"/><path d="m3 20 4 4L19 12" opacity=".5"/></svg>Mark all as read</button>
 <button class="ctx-i" data-a="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.35.95A7 7 0 0 0 14.05 5L13.7 2.5h-4L9.4 5a7 7 0 0 0-2.46 1.42l-2.35-.95-2 3.46 2 1.55A7 7 0 0 0 4.9 12c0 .48.05.94.14 1.4l-2 1.55 2 3.46 2.35-.95c.7.6 1.54 1.1 2.46 1.42l.35 2.62h4l.35-2.62a7 7 0 0 0 2.46-1.42l2.35.95 2-3.46-2-1.55c.09-.46.14-.92.14-1.4Z"/></svg>Settings</button>
 <button class="ctx-i" data-a="inv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/><path d="M19 8v6M16 11h6"/></svg>Invite Friends</button>
@@ -2535,6 +2723,7 @@ ${adminItem}
     if(a==='prof')showMyProfile();
     if(a==='saved')openChat('saved');
     if(a==='ai')openChat('ai_assistant');
+    if(a==='news')openChat('news');
     if(a==='readall'){Object.keys(S.unread).forEach(k=>S.unread[k]=0);renderList();toast('All chats marked as read','✅');}
     if(a==='set')openSettings();
     if(a==='inv'){try{navigator.clipboard.writeText('https://bitabolt.gg/+global')}catch(e2){}toast('Invite link copied — share it!','🔗');}
@@ -2564,7 +2753,7 @@ function confirmModal(text,btn,cb){
 }
 $('#scrim').onclick=()=>{
   if($('#settings').classList.contains('on')){closeSettings();return;}
-  if($('#modalRoot .modal')){closeModal();return;}
+  if($('#modalRoot .modal')){closeModal();return};
 };
 
 /* ===== ADMIN PANEL ===== */
@@ -2572,7 +2761,7 @@ function openAdminPanel(){
   if(!S.isAdmin){toast('⚠️ Admin access required','⚠️');return;}
   const allUsers = accounts();
   const userList = Object.entries(allUsers).filter(([un])=>un!==ADMIN_USERNAME);
-  const onlineCount = Object.values(S.online).filter(p=>p.online).length;
+  const onlineCount = S._onlineCount || Object.values(S.online).filter(p=>p.online).length;
   
   openModal(`<div class="md-head"><b>👑 Admin Panel</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
 <div class="md-body">
@@ -2596,6 +2785,10 @@ ${userList.map(([un, u])=>{
 </div>
 </div>`;
 }).join('')}
+</div>
+<h4 style="color:#ffd700;font-size:12px;font-weight:800;margin-top:14px;letter-spacing:1.5px;text-transform:uppercase">📣 News Channel Management</h4>
+<div class="admin-panel" style="border-color:rgba(142,45,226,.3)">
+<button class="btn-pri" id="postNewsBtn" style="margin:0;background:linear-gradient(135deg,#8e2de2,#4a00e0);box-shadow:0 8px 22px rgba(142,45,226,.4)">📢 Post News Update</button>
 </div>
 <div style="margin-top:12px;padding:10px;background:rgba(0,0,0,.2);border-radius:10px;font-size:11px;color:var(--tx3);line-height:1.5">
 <b style="color:var(--a1)">⚠️ Warning:</b> Admin actions are logged. Deleting accounts is permanent and cannot be undone.
@@ -2637,6 +2830,23 @@ ${userList.map(([un, u])=>{
       });
     };
   });
+  
+  $('#postNewsBtn').onclick=()=>{
+    closeModal();
+    openModal(`<div class="md-head"><b>📣 Post News</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+<div class="md-body">
+<label style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--tx2);font-weight:800;display:block;margin-bottom:6px">News text</label>
+<textarea class="inp" id="newsText" rows="4" placeholder="Enter news update..." style="resize:none"></textarea>
+<button class="btn-pri" id="sendNewsBtn" style="margin:8px 0 0;background:linear-gradient(135deg,#8e2de2,#4a00e0)">📢 Publish</button>
+</div>`);
+    $('#sendNewsBtn').onclick=()=>{
+      const text = $('#newsText').value.trim();
+      if(!text){toast('Enter news text','⚠️');return;}
+      closeModal();
+      addMsg('news', {u:'me',text,st:'sent',_force:true});
+      toast('📣 News published!','📣');
+    };
+  };
 }
 
 /* ===== SETTINGS ===== */
@@ -2673,7 +2883,7 @@ function paintSettings(){
 <button class="st-row" data-v="data"><span class="st-ico" style="background:#00a884">${ic('db')}</span><span class="st-t"><b>Data & Storage</b><span>Firebase RTDB + Storage</span></span>${ic('chev','chev')}</button>
 <button class="st-row" data-v="lang"><span class="st-ico" style="background:#3b82f6">${ic('globe')}</span><span class="st-t"><b>Language</b><span>English</span></span>${ic('chev','chev')}</button>
 <div class="st-sec">Support</div>
-<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v3.8 · Firebase</span></span>${ic('chev','chev')}</button>`;
+<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v3.8 · Firebase + WebRTC</span></span>${ic('chev','chev')}</button>`;
   if(setView==='profile')body=`
 <div class="st-me" style="flex-direction:column;text-align:center"><div class="c-ava" id="pfAva" style="width:82px;height:82px;font-size:36px;${S.me.avatar?`background:url(${S.me.avatar}) center/cover`:`background:linear-gradient(135deg,${S.me.g[0]},${S.me.g[1]})`}">${S.me.avatar?'':S.me.e}</div>
 <button class="btn-ghost" id="pfUpload" style="width:auto;padding:8px 16px;margin-top:8px;font-size:12px">📷 Upload photo</button>
@@ -2843,115 +3053,494 @@ function notifPush(u,text){
   $('#toasts').appendChild(n);setTimeout(()=>{n.style.transition='.3s';n.style.opacity='0';setTimeout(()=>n.remove(),300)},4500);
 }
 
-/* ===== CALL MANAGER ===== */
+/* ===== WEBRTC CALL SYSTEM ===== */
 const CallManager = {
   initialized: false,
+  localStream: null,
+  remoteStream: null,
+  peerConnection: null,
+  callTimer: null,
+  callState: 'idle', // idle, calling, ringing, active, ended
+  targetUser: null,
+  callType: 'audio',
+  isInitiator: false,
+  candidates: [],
+  
   init(){
     if(this.initialized) return;
     this.initialized = true;
-    this.bindCallButtons();
-    console.log('✅ CallManager initialized');
+    this.bindUI();
+    this.listenForCalls();
+    console.log('✅ CallManager initialized with WebRTC');
   },
-  bindCallButtons(){
+  
+  bindUI(){
+    // Call button in chat header
     const hCall = document.getElementById('hCall');
     if(hCall && !hCall.dataset.bound){
       hCall.dataset.bound = '1';
-      hCall.addEventListener('click', ()=>{
-        const target = S.cur;
-        if(!target){toast('No chat selected','⚠️');return;}
-        if(target === 'global' || target === 'news' || target === 'saved' || target === 'ai_assistant'){
+      hCall.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        if(!S.cur || !S.me) return;
+        if(S.cur === 'global' || S.cur === 'news' || S.cur === 'saved' || S.cur === 'ai_assistant'){
           toast('📞 Calls available only in private chats and groups','⚠️');
           return;
         }
-        let user;
-        if(target.startsWith('pm_')){
-          const parts=target.replace('pm_','').split('_');
-          const other=parts.find(p=>p!==S.me.un);
-          user = S.users[other] || {name:other,e:'👤'};
-        }else if(S.groups[target]){
+        let targetUser;
+        if(S.cur.startsWith('pm_')){
+          const parts = S.cur.replace('pm_','').split('_');
+          const other = parts.find(p => p !== S.me.un);
+          targetUser = other;
+        } else if(S.groups[S.cur]){
           toast('👥 Group calls coming soon!','📞');
           return;
-        }else{
+        } else {
           toast('📞 Call not available','⚠️');
           return;
         }
-        this.showCallTypeModal(user, target);
+        this.showCallTypeModal(targetUser);
       });
     }
-    const ccMute = document.getElementById('ccMute');
-    const ccVideo = document.getElementById('ccVideo');
-    const ccSpeaker = document.getElementById('ccSpeaker');
+    
+    // End call button
     const ccEnd = document.getElementById('ccEnd');
-    if(ccMute && !ccMute.dataset.bound){
-      ccMute.dataset.bound='1';
-      ccMute.addEventListener('click',()=>{ccMute.classList.toggle('on');toast(ccMute.classList.contains('on')?'🔇 Muted':'🎤 Unmuted','🔊');});
-    }
-    if(ccVideo && !ccVideo.dataset.bound){
-      ccVideo.dataset.bound='1';
-      ccVideo.addEventListener('click',()=>{ccVideo.classList.toggle('on');toast(ccVideo.classList.contains('on')?'📹 Camera off':'📷 Camera on','📹');});
-    }
-    if(ccSpeaker && !ccSpeaker.dataset.bound){
-      ccSpeaker.dataset.bound='1';
-      ccSpeaker.addEventListener('click',()=>{ccSpeaker.classList.toggle('on');toast(ccSpeaker.classList.contains('on')?'🔊 Speaker on':'🔉 Speaker off','🔊');});
-    }
     if(ccEnd && !ccEnd.dataset.bound){
       ccEnd.dataset.bound='1';
-      ccEnd.addEventListener('click',()=>{
-        document.getElementById('callScreen')?.classList.remove('on');
-        clearInterval(window._callTimer);
-        toast('📞 Call ended','📞');
+      ccEnd.addEventListener('click', ()=>{
+        this.endCall();
+      });
+    }
+    
+    // Close call button in header
+    const csEnd = document.getElementById('csEndCall');
+    if(csEnd && !csEnd.dataset.bound){
+      csEnd.dataset.bound='1';
+      csEnd.addEventListener('click', ()=>{
+        this.endCall();
+      });
+    }
+    
+    // Mute button
+    const ccMute = document.getElementById('ccMute');
+    if(ccMute && !ccMute.dataset.bound){
+      ccMute.dataset.bound='1';
+      ccMute.addEventListener('click', ()=>{
+        ccMute.classList.toggle('on');
+        if(this.localStream){
+          this.localStream.getAudioTracks().forEach(t => t.enabled = !ccMute.classList.contains('on'));
+        }
+        toast(ccMute.classList.contains('on')?'🔇 Muted':'🎤 Unmuted','🔊');
+      });
+    }
+    
+    // Video button
+    const ccVideo = document.getElementById('ccVideo');
+    if(ccVideo && !ccVideo.dataset.bound){
+      ccVideo.dataset.bound='1';
+      ccVideo.addEventListener('click', ()=>{
+        ccVideo.classList.toggle('on');
+        if(this.localStream){
+          this.localStream.getVideoTracks().forEach(t => t.enabled = !ccVideo.classList.contains('on'));
+        }
+        toast(ccVideo.classList.contains('on')?'📹 Camera off':'📷 Camera on','📹');
+      });
+    }
+    
+    // Speaker button
+    const ccSpeaker = document.getElementById('ccSpeaker');
+    if(ccSpeaker && !ccSpeaker.dataset.bound){
+      ccSpeaker.dataset.bound='1';
+      ccSpeaker.addEventListener('click', ()=>{
+        ccSpeaker.classList.toggle('on');
+        // Note: Speaker control via WebRTC is limited, but we can toggle audio output
+        toast(ccSpeaker.classList.contains('on')?'🔊 Speaker on':'🔉 Speaker off','🔊');
       });
     }
   },
-  showCallTypeModal(user, target){
+  
+  showCallTypeModal(targetUser){
+    const u = S.users[targetUser] || {name:targetUser, e:'👤'};
     openModal(`
-<div class="md-head"><b>📞 Call</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+<div class="md-head"><b>📞 Call ${esc(u.name)}</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
 <div class="md-body" style="text-align:center;padding:20px 0">
-<div style="font-size:48px;margin:8px 0">${user.e || '👤'}</div>
-<div style="font-size:18px;font-weight:800">${esc(user.name)}</div>
-<div style="color:var(--tx2);margin:4px 0 16px">@${esc(user.id || target)}</div>
+<div style="font-size:48px;margin:8px 0">${u.e || '👤'}</div>
+<div style="font-size:18px;font-weight:800">${esc(u.name)}</div>
+<div style="color:var(--tx2);margin:4px 0 16px">@${esc(targetUser)}</div>
 <div style="display:flex;gap:20px;justify-content:center">
-<button class="ic-btn accept" style="width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callAudioBtn">📞</button>
-<button class="ic-btn" style="width:60px;height:60px;border-radius:50%;background:var(--a1);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callVideoBtn">📹</button>
+<button class="ic-btn" style="width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callAudioBtn">📞</button>
+<button class="ic-btn" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8e2de2,#4a00e0);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callVideoBtn">📹</button>
 </div>
 <div style="display:flex;gap:30px;justify-content:center;margin-top:8px;font-size:11px;color:var(--tx2)"><span>Audio</span><span>Video</span></div>
 </div>
 `);
-    document.getElementById('callAudioBtn')?.addEventListener('click',()=>{closeModal();startCallSim(target,'audio');});
-    document.getElementById('callVideoBtn')?.addEventListener('click',()=>{closeModal();startCallSim(target,'video');});
+    document.getElementById('callAudioBtn')?.addEventListener('click', ()=>{
+      closeModal();
+      this.startCall(targetUser, 'audio');
+    });
+    document.getElementById('callVideoBtn')?.addEventListener('click', ()=>{
+      closeModal();
+      this.startCall(targetUser, 'video');
+    });
+  },
+  
+  async startCall(targetUser, type){
+    if(this.callState !== 'idle'){
+      toast('Already in a call','⚠️');
+      return;
+    }
+    if(targetUser === S.me.un){
+      toast('Cannot call yourself','⚠️');
+      return;
+    }
+    
+    this.targetUser = targetUser;
+    this.callType = type || 'audio';
+    this.isInitiator = true;
+    this.callState = 'calling';
+    
+    toast(`📞 Calling ${esc(S.users[targetUser]?.name || targetUser)}...`, '📞');
+    
+    try {
+      // Get user media
+      const constraints = {
+        audio: true,
+        video: type === 'video' ? { width: 640, height: 480 } : false
+      };
+      this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      // Show call UI
+      this.showCallUI(targetUser, type, true);
+      
+      // Setup peer connection
+      await this.setupPeerConnection(targetUser);
+      
+      // Send call signal
+      await FB.sendCallSignal(targetUser, {
+        type: 'offer',
+        from: S.me.un,
+        callType: type,
+        sdp: this.peerConnection.localDescription
+      });
+      
+      // Start timer
+      this.startTimer();
+      
+      // Listen for answer
+      this._answerListener = (signals) => {
+        const answer = signals.find(s => s.type === 'answer' && s.from === targetUser);
+        if(answer && this.peerConnection && this.peerConnection.remoteDescription === null){
+          this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer.sdp));
+          this.callState = 'active';
+          toast('📞 Call connected!','📞');
+          document.getElementById('csTitle').textContent = `📞 ${esc(S.users[targetUser]?.name || targetUser)}`;
+        }
+      };
+      FB.listenCallSignals(this._answerListener);
+      
+    } catch(err) {
+      console.error('Start call error:', err);
+      toast('❌ Failed to start call: '+err.message, '❌');
+      this.endCall();
+    }
+  },
+  
+  async setupPeerConnection(targetUser){
+    const config = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    };
+    this.peerConnection = new RTCPeerConnection(config);
+    
+    // Add local stream
+    if(this.localStream){
+      this.localStream.getTracks().forEach(track => {
+        this.peerConnection.addTrack(track, this.localStream);
+      });
+    }
+    
+    // Handle remote stream
+    this.peerConnection.ontrack = (event) => {
+      this.remoteStream = event.streams[0];
+      this.showRemoteVideo(this.remoteStream);
+    };
+    
+    // Handle ICE candidates
+    this.peerConnection.onicecandidate = (event) => {
+      if(event.candidate){
+        this.candidates.push(event.candidate);
+        FB.sendCallSignal(targetUser, {
+          type: 'candidate',
+          from: S.me.un,
+          candidate: event.candidate
+        });
+      }
+    };
+    
+    // Handle connection state
+    this.peerConnection.onconnectionstatechange = () => {
+      const state = this.peerConnection.connectionState;
+      console.log('Connection state:', state);
+      if(state === 'connected'){
+        this.callState = 'active';
+        if(document.getElementById('csTitle')){
+          document.getElementById('csTitle').textContent = `📞 ${esc(S.users[targetUser]?.name || targetUser)}`;
+        }
+      } else if(state === 'disconnected' || state === 'failed' || state === 'closed'){
+        toast('📞 Call disconnected','📞');
+        this.endCall();
+      }
+    };
+    
+    // Create offer if initiator
+    if(this.isInitiator){
+      const offer = await this.peerConnection.createOffer();
+      await this.peerConnection.setLocalDescription(offer);
+    }
+  },
+  
+  async handleIncomingCall(from, signal){
+    if(this.callState !== 'idle'){
+      toast('Already in a call, rejecting...','⚠️');
+      return;
+    }
+    
+    this.targetUser = from;
+    this.callType = signal.callType || 'audio';
+    this.isInitiator = false;
+    this.callState = 'ringing';
+    
+    const userName = S.users[from]?.name || from;
+    
+    // Show incoming call notification
+    const notif = document.createElement('div');
+    notif.className = 'notif';
+    notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:301;min-width:320px;text-align:center;background:#1a1a24;border:2px solid var(--a1);border-radius:20px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.8)';
+    notif.innerHTML = `
+      <div style="font-size:56px;margin:8px 0">${S.users[from]?.e || '📞'}</div>
+      <div style="font-size:20px;font-weight:800">${esc(userName)}</div>
+      <div style="color:var(--tx2);margin:4px 0 16px">${signal.callType === 'video' ? '📹 Video call' : '🎧 Audio call'}</div>
+      <div style="display:flex;gap:16px;justify-content:center">
+        <button class="btn-pri" id="acceptCallBtn" style="width:auto;padding:10px 28px;margin:0;background:var(--green);box-shadow:0 8px 22px rgba(47,213,97,.4)">✅ Accept</button>
+        <button class="btn-ghost" id="declineCallBtn" style="width:auto;padding:10px 28px;margin:0;background:#e5352b;color:#fff">❌ Decline</button>
+      </div>
+    `;
+    document.body.appendChild(notif);
+    
+    // Bring to front
+    notif.style.zIndex = '301';
+    
+    return new Promise((resolve) => {
+      document.getElementById('acceptCallBtn').onclick = async () => {
+        notif.remove();
+        try {
+          // Get user media
+          const constraints = {
+            audio: true,
+            video: signal.callType === 'video' ? { width: 640, height: 480 } : false
+          };
+          this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+          
+          // Show call UI
+          this.showCallUI(from, signal.callType, false);
+          
+          // Setup peer connection
+          await this.setupPeerConnection(from);
+          
+          // Set remote description from offer
+          await this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp));
+          
+          // Create answer
+          const answer = await this.peerConnection.createAnswer();
+          await this.peerConnection.setLocalDescription(answer);
+          
+          // Send answer
+          await FB.sendCallSignal(from, {
+            type: 'answer',
+            from: S.me.un,
+            sdp: answer
+          });
+          
+          this.callState = 'active';
+          toast('📞 Call connected!','📞');
+          this.startTimer();
+          resolve(true);
+          
+        } catch(err) {
+          console.error('Accept call error:', err);
+          toast('❌ Failed to accept call','❌');
+          this.endCall();
+          resolve(false);
+        }
+      };
+      
+      document.getElementById('declineCallBtn').onclick = () => {
+        notif.remove();
+        FB.sendCallSignal(from, {
+          type: 'decline',
+          from: S.me.un
+        });
+        toast('📞 Call declined','📞');
+        this.callState = 'idle';
+        resolve(false);
+      };
+    });
+  },
+  
+  showCallUI(targetUser, type, isInitiator){
+    const cs = document.getElementById('callScreen');
+    if(!cs) return;
+    
+    cs.classList.add('on');
+    document.getElementById('csTitle').textContent = isInitiator ? 
+      `📞 Calling ${esc(S.users[targetUser]?.name || targetUser)}...` :
+      `📞 Incoming call...`;
+    document.getElementById('csTimer').textContent = '00:00';
+    
+    const peers = document.getElementById('csPeers');
+    const isVideo = type === 'video';
+    peers.className = 'call-peers ' + (isVideo ? 'grid-2' : 'grid-1');
+    
+    // Show local video
+    let localVideoHTML = '';
+    if(this.localStream && isVideo){
+      localVideoHTML = `<video class="local-video" id="localVideo" autoplay muted playsinline></video>`;
+    }
+    
+    peers.innerHTML = `
+      <div class="call-peer me">
+        ${localVideoHTML}
+        <div class="cp-ava ${this.localStream && isVideo ? 'off' : ''}">${S.me.e}</div>
+        <div class="cp-name"><span>${esc(S.me.name)}</span></div>
+      </div>
+      <div class="call-peer">
+        <video class="remote-video" id="remoteVideo" autoplay playsinline></video>
+        <div class="cp-ava" id="remoteAva">${S.users[targetUser]?.e || '👤'}</div>
+        <div class="cp-name"><span>${esc(S.users[targetUser]?.name || targetUser)}</span><span style="color:var(--green)"> ●</span></div>
+      </div>
+    `;
+    
+    // Attach local video
+    if(this.localStream && isVideo){
+      const localVideo = document.getElementById('localVideo');
+      if(localVideo){
+        localVideo.srcObject = this.localStream;
+        localVideo.onloadedmetadata = () => localVideo.play();
+      }
+    }
+    
+    // Show remote video placeholder
+    const remoteVideo = document.getElementById('remoteVideo');
+    if(remoteVideo && this.remoteStream){
+      remoteVideo.srcObject = this.remoteStream;
+      remoteVideo.onloadedmetadata = () => remoteVideo.play();
+    }
+    
+    // Update remote ava when stream arrives
+    if(!isVideo){
+      document.getElementById('remoteAva').classList.remove('off');
+    }
+  },
+  
+  showRemoteVideo(stream){
+    const remoteVideo = document.getElementById('remoteVideo');
+    if(remoteVideo){
+      remoteVideo.srcObject = stream;
+      remoteVideo.onloadedmetadata = () => remoteVideo.play();
+      document.getElementById('remoteAva').classList.add('off');
+    }
+  },
+  
+  startTimer(){
+    let sec = 0;
+    clearInterval(this.callTimer);
+    this.callTimer = setInterval(()=>{
+      sec++;
+      const el = document.getElementById('csTimer');
+      if(el) el.textContent = fmtDur(sec);
+    }, 1000);
+  },
+  
+  async endCall(){
+    this.callState = 'ended';
+    clearInterval(this.callTimer);
+    
+    // Close peer connection
+    if(this.peerConnection){
+      this.peerConnection.close();
+      this.peerConnection = null;
+    }
+    
+    // Stop streams
+    if(this.localStream){
+      this.localStream.getTracks().forEach(t => t.stop());
+      this.localStream = null;
+    }
+    this.remoteStream = null;
+    
+    // Hide call UI
+    const cs = document.getElementById('callScreen');
+    if(cs) cs.classList.remove('on');
+    
+    // Clear Firebase signals
+    if(this.targetUser){
+      await FB.endCall(this.targetUser);
+    }
+    
+    // Remove listeners
+    if(this._answerListener){
+      // We can't easily remove specific listener, but we'll handle it via state
+    }
+    
+    // Reset
+    this.targetUser = null;
+    this.callState = 'idle';
+    this.isInitiator = false;
+    this.candidates = [];
+    
+    toast('📞 Call ended','📞');
+  },
+  
+  listenForCalls(){
+    FB.listenCallSignals(async (signals) => {
+      // Check for incoming offers
+      const offer = signals.find(s => s.type === 'offer' && s.from !== S.me.un);
+      if(offer && this.callState === 'idle'){
+        await this.handleIncomingCall(offer.from, offer);
+        return;
+      }
+      
+      // Check for candidate messages
+      const candidates = signals.filter(s => s.type === 'candidate' && s.from !== S.me.un);
+      for(const cand of candidates){
+        if(this.peerConnection && this.peerConnection.remoteDescription){
+          try {
+            await this.peerConnection.addIceCandidate(new RTCIceCandidate(cand.candidate));
+          } catch(e){ console.warn('Add ICE candidate error:', e); }
+        }
+      }
+      
+      // Check for decline
+      const decline = signals.find(s => s.type === 'decline' && s.from !== S.me.un);
+      if(decline && this.callState === 'calling'){
+        toast('📞 Call declined by user','📞');
+        this.endCall();
+      }
+      
+      // Check for answer
+      const answer = signals.find(s => s.type === 'answer' && s.from !== S.me.un);
+      if(answer && this.peerConnection && this.peerConnection.remoteDescription === null){
+        try {
+          await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer.sdp));
+          this.callState = 'active';
+          toast('📞 Call connected!','📞');
+          document.getElementById('csTitle').textContent = `📞 ${esc(S.users[this.targetUser]?.name || this.targetUser)}`;
+        } catch(e){ console.warn('Set answer error:', e); }
+      }
+    });
   }
 };
-
-function startCallSim(target, type){
-  let user;
-  if(target.startsWith('pm_')){
-    const parts=target.replace('pm_','').split('_');
-    const other=parts.find(p=>p!==S.me.un);
-    user = S.users[other] || {name:other,e:'👤'};
-  }else{
-    user = S.users[target] || {name:target,e:'👤'};
-  }
-  toast(`📞 ${type === 'audio' ? 'Audio' : 'Video'} call with ${esc(user.name)}... (simulation)`, '📞');
-  const cs = document.getElementById('callScreen');
-  if(cs){
-    cs.classList.add('on');
-    document.getElementById('csTitle').textContent = `${type === 'audio' ? '🎧' : '📹'} ${esc(user.name)}`;
-    document.getElementById('csTimer').textContent = '00:00';
-    const peers = document.getElementById('csPeers');
-    peers.innerHTML = `
-<div class="call-peer me"><div class="cp-ava">${S.me.e}</div><div class="cp-name"><span>${esc(S.me.name)}</span></div></div>
-<div class="call-peer"><div class="cp-ava">${user.e || '👤'}</div><div class="cp-name"><span>${esc(user.name)}</span><span style="color:var(--green)"> ●</span></div></div>
-`;
-    peers.className = 'call-peers grid-2';
-    let sec = 0;
-    clearInterval(window._callTimer);
-    window._callTimer = setInterval(()=>{
-      sec++;
-      document.getElementById('csTimer').textContent = fmtDur(sec);
-    },1000);
-  }
-}
-window.startCallSim = startCallSim;
 
 /* ===== EMOJI PANEL ===== */
 $('#emojiBtn').onclick=e=>{
@@ -3033,7 +3622,7 @@ document.addEventListener('keydown',e=>{
   }
 })();
 
-console.log('✅ Bitabolt v3.8 loaded with admin panel, private chats, improved AI');
+console.log('✅ Bitabolt v3.8 loaded with WebRTC calls, admin panel, private chats, channels');
 </script>
 </body>
 </html>
