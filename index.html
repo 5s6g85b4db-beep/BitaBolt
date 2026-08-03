@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <title>Bitabolt — The Global Messenger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,24 +12,22 @@
 --line:rgba(255,255,255,.07);--tx:#f5f5f8;--tx2:#9b9ba8;--tx3:#5f5f6e;
 --a1:#ff2743;--a2:#ff6a2b;--asoft:rgba(255,39,67,.13);--green:#2fd561;
 --disp:'Unbounded',sans-serif;--body:'Manrope',sans-serif;
---dockOffset:0px;
+--dockOffset:0px;--kb-height:0px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%}
-body{background:var(--bg);color:var(--tx);font-family:var(--body);font-size:14.5px;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:var(--body);font-size:14.5px;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;position:fixed;width:100%;height:100%}
 button{font-family:var(--body);cursor:pointer;border:none;background:none;color:inherit}
 input,textarea,select{font-family:var(--body);color:var(--tx)}
 ::selection{background:var(--a1);color:#fff}
-::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:#2c2c38;border-radius:9px}
-::-webkit-scrollbar-thumb:hover{background:#46303a}
 .hidden{display:none!important}
 svg{display:block}
 #fx{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.45}
-button:focus-visible{outline:2px solid var(--a1);outline-offset:2px}
 .inp:focus-visible,#txt:focus-visible,#inSearch:focus-visible,#sideSearch:focus-visible{outline:none}
-input:-webkit-autofill,textarea:-webkit-autofill{-webkit-text-fill-color:var(--tx);-webkit-box-shadow:0 0 0 60px var(--p2) inset;caret-color:var(--tx);transition:background-color 99999s}
-body.lite *{animation-duration:0s!important;animation:none!important;transition-duration:0s!important;transition:none!important}
+input:-webkit-autofill,textarea:-webkit-autofill{-webkit-text-fill-color:var(--tx);-webkit-box-shadow:0 0 0 60px var(--p2) inset;caret-color:var(--tx)}
+body.lite *{animation-duration:0s!important;animation:none!important;transition-duration:0s!important}
 body.lite #fx{display:none}
 body.lite .al-logo i,body.lite .e-orb i{display:none}
 body.lite .eq i{animation:none!important;height:10px}
@@ -39,14 +37,12 @@ body.lite .al-pulse,body.lite .m-bubble,body.lite .btn-pri{box-shadow:none}
 body.lite .btn-pri::after{display:none}
 body.lite .msg,body.lite .pop,body.lite .toast,body.lite .notif,body.lite .a-card,body.lite .af{animation:none}
 body.lite .al-logo,body.lite .e-orb,body.lite .simvid,body.lite .loc-pin,body.lite .rchip,body.lite .m-stk{animation:none}
-body.lite .flash .m-bubble{animation:none}
-body.lite #main::before{display:none}
 @keyframes reactionFly{0%{transform:translateY(0) scale(.8);opacity:1}100%{transform:translateY(-100px) scale(1.5);opacity:0}}
 @keyframes messageIn{0%{transform:translateX(-20px) scale(.95);opacity:0}100%{transform:translateX(0) scale(1);opacity:1}}
 @keyframes popIn{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 #auth{position:fixed;inset:0;z-index:50;display:grid;grid-template-columns:1.15fr 1fr;transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1)}
 #auth.done{opacity:0;transform:scale(1.04);pointer-events:none}
-.a-left{position:relative;display:flex;flex-direction:column;justify-content:center;padding:44px 56px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+.a-left{position:relative;display:flex;flex-direction:column;justify-content:center;padding:44px 56px;overflow-y:auto;
 background:radial-gradient(900px 620px at 18% 28%,rgba(255,39,67,.16),transparent 60%),radial-gradient(700px 520px at 95% 95%,rgba(255,106,43,.09),transparent 60%),#07070a;
 border-right:1px solid var(--line)}
 .a-left::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px);background-size:24px 24px;pointer-events:none}
@@ -76,7 +72,7 @@ h1.al-brand b{color:var(--a1)}
 @keyframes eq{0%,100%{height:5px}50%{height:18px}}
 .al-pulse small{font-size:11px;color:var(--tx2);font-weight:700}
 .al-foot{position:relative;z-index:2;font-size:10px;letter-spacing:2px;color:var(--tx3);margin-top:28px}
-.a-right{display:flex;padding:24px;position:relative;z-index:2;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.a-right{display:flex;padding:24px;position:relative;z-index:2;overflow-y:auto}
 .a-card{width:min(430px,100%);margin:auto;background:linear-gradient(180deg,rgba(21,21,29,.96),rgba(12,12,17,.96));border:1px solid var(--line);border-radius:22px;padding:28px 28px 24px;box-shadow:0 40px 100px rgba(0,0,0,.7);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);animation:cardin .6s cubic-bezier(.2,.9,.3,1.1) both}
 @keyframes cardin{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:none}}
 .a-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--p2);border-radius:13px;padding:4px;margin-bottom:22px}
@@ -130,7 +126,7 @@ h1.al-brand b{color:var(--a1)}
 .av-grads span:hover{transform:scale(1.2)}
 .av-grads span.on{border-color:#fff;box-shadow:0 0 0 2.5px var(--bg),0 6px 18px rgba(0,0,0,.5)}
 .a-note{text-align:center;font-size:11px;color:var(--tx3);margin-top:16px;line-height:1.5;letter-spacing:.3px}
-#app{position:relative;z-index:1;display:grid;grid-template-columns:360px 1fr;height:100vh;height:var(--appH,100vh)}
+#app{position:relative;z-index:1;display:grid;grid-template-columns:360px 1fr;height:100vh;height:var(--appH,100dvh)}
 @media(min-width:1700px){#app{grid-template-columns:400px 1fr}}
 #side{background:var(--p1);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0;min-height:0}
 .s-brand{display:flex;align-items:center;gap:11px;padding:14px 15px 8px}
@@ -186,7 +182,7 @@ background:radial-gradient(700px 420px at 88% -8%,rgba(255,39,67,.1),transparent
 #main::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px);background-size:23px 23px}
 body.wp-grid #main::before{background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:26px 26px}
 body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at 50% 125%,transparent 0 46px,rgba(255,255,255,.035) 46px 47px)}
-.c-head{display:flex;align-items:center;gap:10px;padding:9px 16px;min-height:60px;background:rgba(12,12,17,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:relative;z-index:5}
+.c-head{display:flex;align-items:center;gap:10px;padding:9px 16px;min-height:60px;background:rgba(12,12,17,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:relative;z-index:5;flex-shrink:0}
 .c-head .c-ava{width:42px;height:42px;font-size:19px;cursor:pointer}
 .h-info{flex:1;min-width:0;cursor:pointer}
 .h-info b{font-size:15px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
@@ -197,11 +193,11 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .tdots i:nth-child(2){animation-delay:.2s}.tdots i:nth-child(3){animation-delay:.4s}
 @keyframes td{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-4px);opacity:1}}
 #backBtn{display:none}
-#searchBar{display:none;align-items:center;gap:7px;padding:7px 14px;background:var(--p1);border-bottom:1px solid var(--line);position:relative;z-index:5}
+#searchBar{display:none;align-items:center;gap:7px;padding:7px 14px;background:var(--p1);border-bottom:1px solid var(--line);position:relative;z-index:5;flex-shrink:0}
 #searchBar.on{display:flex}
 #searchBar input{flex:1;background:var(--p2);border:none;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;-webkit-appearance:none}
 #searchBar .cnt{font-size:12px;color:var(--tx2);font-weight:700;min-width:52px;text-align:center}
-#pinned{display:none;align-items:center;gap:10px;padding:7px 16px;background:rgba(255,39,67,.08);border-bottom:1px solid rgba(255,39,67,.15);cursor:pointer;position:relative;z-index:5;transition:.18s}
+#pinned{display:none;align-items:center;gap:10px;padding:7px 16px;background:rgba(255,39,67,.08);border-bottom:1px solid rgba(255,39,67,.15);cursor:pointer;position:relative;z-index:5;transition:.18s;flex-shrink:0}
 #pinned.on{display:flex}
 #pinned:hover{background:rgba(255,39,67,.14)}
 #pinned svg{width:14px;height:14px;color:var(--a1);flex:none}
@@ -346,20 +342,20 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 #fab:hover{transform:scale(1.1);box-shadow:0 12px 32px rgba(255,39,67,.7)}
 #fab svg{width:22px;height:22px}
 #fab .fb{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:12px;background:#fff;color:var(--a1);font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.dock{padding:7px 18px 12px;position:relative;z-index:6;width:100%;max-width:940px;margin:0 auto;transform:translateY(calc(-1 * var(--dockOffset)))}
+.dock{padding:7px 18px 12px;position:relative;z-index:6;width:100%;max-width:940px;margin:0 auto;transform:translateY(calc(-1 * var(--dockOffset)));flex-shrink:0}
 #replyBar{display:none;align-items:center;gap:9px;background:rgba(12,12,17,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line);border-bottom:none;border-radius:15px 15px 0 0;padding:8px 12px;margin:0 2px}
 #replyBar.on{display:flex;animation:secin .25s}
 #replyBar .ric{color:var(--a1);font-size:15px;flex:none}
 #replyBar .rt{flex:1;min-width:0}
 #replyBar .rt b{color:var(--a1);font-size:12px;display:block}
 #replyBar .rt span{color:var(--tx2);font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.i-row{display:flex;align-items:flex-end;gap:7px;background:rgba(19,19,26,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:6px 7px 6px 5px;box-shadow:0 10px 32px rgba(0,0,0,.45);transition:.25s;position:relative}
+.i-row{display:flex;align-items:flex-end;gap:7px;background:rgba(19,19,26,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:6px 7px 6px 5px;box-shadow:0 10px 32px rgba(0,0,0,.45);transition:.25s;position:relative;flex-shrink:0}
 #replyBar.on ~ .i-row{border-radius:0 0 18px 18px}
 .i-row:focus-within{border-color:rgba(255,39,67,.5);box-shadow:0 10px 32px rgba(0,0,0,.45),0 0 0 4px var(--asoft)}
-.i-row .icon-btn{width:40px;height:40px;border-radius:13px}
+.i-row .icon-btn{width:40px;height:40px;border-radius:13px;flex-shrink:0}
 #txt{flex:1;background:none;border:none;outline:none;resize:none;font-size:14.5px;line-height:1.5;max-height:160px;padding:10px 2px;min-width:0;-webkit-appearance:none}
 #txt::placeholder{color:var(--tx3)}
-#mainBtn{width:44px;height:44px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.3s cubic-bezier(.3,1.3,.4,1);position:relative;background:var(--p3);color:var(--tx2)}
+#mainBtn{width:44px;height:44px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.3s cubic-bezier(.3,1.3,.4,1);position:relative;background:var(--p3);color:var(--tx2);flex-shrink:0}
 #mainBtn:hover{transform:scale(1.12);color:#fff;background:var(--p4)}
 #mainBtn svg{width:20px;height:20px;position:absolute;transition:.3s cubic-bezier(.3,1.5,.4,1)}
 #mainBtn .ic-send{opacity:0;transform:scale(.3) rotate(-90deg)}
@@ -523,20 +519,20 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 #callScreen.on{display:flex}
 .call-bg{position:absolute;inset:0;background:radial-gradient(900px 620px at 50% 30%,rgba(255,39,67,.18),transparent 60%),radial-gradient(700px 520px at 20% 80%,rgba(255,106,43,.12),transparent 60%),#050507}
 .call-bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1.4px);background-size:24px 24px;opacity:.6}
-.call-top{position:relative;z-index:2;padding:20px 24px;display:flex;align-items:center;gap:14px}
+.call-top{position:relative;z-index:2;padding:20px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0}
 .call-top .ct-sec{font-size:10px;letter-spacing:3px;color:var(--tx2);font-weight:800;text-transform:uppercase}
 .call-top .ct-timer{font-family:var(--disp);font-size:15px;font-weight:700;color:var(--tx);letter-spacing:1px;margin-left:auto;background:rgba(255,255,255,.06);padding:6px 14px;border-radius:20px;border:1px solid var(--line)}
-.call-peers{flex:1;position:relative;z-index:2;display:grid;gap:12px;padding:16px;align-content:center;justify-items:center}
+.call-peers{flex:1;position:relative;z-index:2;display:grid;gap:12px;padding:16px;align-content:center;justify-items:center;min-height:0;max-height:calc(100vh - 250px)}
 .call-peers.grid-1{grid-template-columns:1fr}
 .call-peers.grid-2{grid-template-columns:1fr 1fr}
 .call-peer{position:relative;border-radius:22px;overflow:hidden;background:#0a0a10;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
 .call-peer .cp-ava{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 14px 40px rgba(255,39,67,.45)}
 .call-peer .cp-name{position:absolute;left:14px;bottom:12px;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:5px 12px;border-radius:12px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:7px}
 .call-peer.me{border-color:rgba(47,213,97,.4)}
-.call-peer .local-video{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;border-radius:22px}
+.call-peer .local-video{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;border-radius:22px;transform:scaleX(-1)}
 .call-peer .remote-video{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;border-radius:22px}
 .call-peer .cp-ava.off{display:none}
-.call-bottom{position:relative;z-index:2;padding:18px 24px 28px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.call-bottom{position:relative;z-index:2;padding:18px 24px 28px;display:flex;flex-direction:column;gap:14px;align-items:center;flex-shrink:0}
 .call-controls{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
 .cc-btn{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:#fff;transition:.2s;position:relative}
 .cc-btn:hover{background:rgba(255,255,255,.18);transform:scale(1.08)}
@@ -744,12 +740,13 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 <div id="lightbox"><img id="lbImg" alt=""></div>
 <input type="file" id="chatImgInput" accept="image/*" style="display:none">
 <input type="file" id="chatVideoInput" accept="video/*" style="display:none">
+
+<!-- CALL SCREEN -->
 <div id="callScreen">
 <div class="call-bg"></div>
 <div class="call-top">
 <div class="ct-sec" id="csTitle">Call</div>
 <div class="ct-timer" id="csTimer">00:00</div>
-<button class="icon-btn" id="csEndCall" style="color:var(--a1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 10a5 5 0 0 1 5 5v3a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-3M6 10a5 5 0 0 0-5 5v3a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-3"/><path d="M12 2v8M9 8l3 3 3-3"/></svg></button>
 </div>
 <div class="call-peers grid-1" id="csPeers"></div>
 <div class="call-bottom">
@@ -761,9 +758,10 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 </div>
 </div>
 </div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-import { getDatabase, ref, set, get, push, onValue, onDisconnect, update, remove, limitToLast, query, off, goOffline } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
+import { getDatabase, ref, set, get, push, onValue, onDisconnect, update, remove, limitToLast, query, off } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
 import { getStorage, ref as sref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -874,8 +872,7 @@ const S={
   aiContext:[],
   fbListeners:{},
   _onlineCount:0,
-  _totalUsers:0,
-  _callListeners:{}
+  _totalUsers:0
 };
 
 const kU=()=>'bb_u_'+(S.me?.un||'anon'), kM=()=>'bb_m_'+(S.me?.un||'anon'), kS=()=>'bb_s_'+(S.me?.un||'anon');
@@ -911,18 +908,8 @@ const EMOJI={
 };
 const STK=['⚡','🔥','😂','❤️','🚀','👍','🎉','😎','🤯','💯','🥳','😭','🫡','💪','🤖','👾','🦄','🌍','☕','🍕'];
 
-const EMOJI_SHORTCUTS = {
-  ':)':'🙂',':-)':'🙂',':(':'🙁',':-(':'🙁',':D':'😃',':-D':'😃',
-  ';)':'😉',';-)':'😉',':P':'😛',':-P':'😛',':p':'😛',
-  '<3':'❤️','</3':'💔','(y)':'👍','(n)':'👎',
-  ':*':'😘',':-O':'😮',':o':'😮','B)':'😎',
-  'XD':'😆','xD':'😆',':\'(':'😢',':fire:':'🔥',':bolt:':'⚡'
-};
-
 const ADMIN_USERNAME = 'admin228';
 const ADMIN_PASSWORD = 'admin228';
-
-function isAdminUser(un){ return un === ADMIN_USERNAME; }
 
 const FB={
   online:false,listeners:{},storageOK:null,
@@ -1100,11 +1087,23 @@ const FB={
   async unsubscribeChannel(channelId,un){
     try{await remove(ref(db,'channels/'+sanitizePath(channelId)+'/subs/'+sanitizePath(un)));}catch(e){}
   },
-  // === WebRTC Signaling ===
+  // === CALL SIGNALING ===
   async sendCallSignal(target, signal){
     const path = 'calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un);
     await set(ref(db, path), signal);
     await set(ref(db, path+'/timestamp'), Date.now());
+    // Auto-cleanup after 30 seconds
+    setTimeout(async () => {
+      try{
+        const snap = await get(ref(db, path));
+        if(snap.exists()){
+          const data = snap.val();
+          if(data.type === 'offer' && Date.now() - data.timestamp > 30000){
+            await remove(ref(db, path));
+          }
+        }
+      }catch(e){}
+    }, 30000);
   },
   listenCallSignals(cb){
     const path = 'calls/'+sanitizePath(S.me.un);
@@ -1122,11 +1121,8 @@ const FB={
   async clearCallSignals(){
     try{await remove(ref(db, 'calls/'+sanitizePath(S.me.un)));}catch(e){}
   },
-  async setCallState(target, state){
-    await set(ref(db, 'calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un)+'/state'), state);
-  },
   async endCall(target){
-    await remove(ref(db, 'calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un)));
+    try{await remove(ref(db, 'calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un)));}catch(e){}
   }
 };
 
@@ -1302,12 +1298,12 @@ function seedFresh(){
     {id:uid(),sys:1,t:now+1,text:'⚡ Messages sync in real-time via Firebase. Say hello!'}
   ];
   S.msgs.news=[
-    {id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 3.8 is here.**\n• 👑 Admin panel\n• 💬 Private chats\n• 🤖 AI assistant\n• 📞 WebRTC calls\n• 🔒 PBKDF2 security'},
-    {id:uid(),u:'ch',t:now-1200e3,text:'📞 **WebRTC Calls** now available! Call any user with real audio/video.'}
+    {id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 3.8 is here.**\n• 👑 New admin panel with user management\n• 💬 Private chats between users\n• 🤖 Improved AI assistant with context\n• 📞 Call users directly from profile\n• 🔒 Enhanced security with PBKDF2\n• 🛡️ Admin: @admin228',views:'—'},
+    {id:uid(),u:'ch',t:now-1200e3,text:'🔒 Your data is cached locally and synced to the cloud. Works offline, syncs when back online.\n📱 Lite mode for smooth performance on budget phones.',views:'—'}
   ];
   S.msgs.saved=[{id:uid(),sys:1,t:now,text:'🔖 This is your private cloud — forward anything here or write notes to yourself.'}];
   S.msgs.ai_assistant=[
-    {id:uid(),sys:1,t:now,text:'🤖 Привет! Я твой AI-ассистент. Команды: /help, /clear, /stats, /joke, /code'}
+    {id:uid(),sys:1,t:now,text:'🤖 Привет! Я твой AI-ассистент. Я могу:\n\n• 💬 Отвечать на вопросы\n• 💻 Помогать с кодом\n• 🌐 Переводить текст\n• 📊 Анализировать данные\n• 🎨 Генерировать идеи\n\nПросто напиши что-нибудь! Команды: /help, /clear, /stats'}
   ];
   persist();
 }
@@ -1373,7 +1369,6 @@ function startFirebaseListeners(){
       sn.innerHTML = `<i></i>${onCount} online · ${totalUsers} members`;
     }
   });
-  // Global chat listener
   FB.listenMessages('global',remoteMsgs=>{
     if(!remoteMsgs.length)return;
     const localIds=new Set(S.msgs.global.filter(m=>m.id).map(m=>m.id));
@@ -1391,7 +1386,6 @@ function startFirebaseListeners(){
     });
     if(added){S.msgs.global.sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
   });
-  // News channel listener
   FB.listenMessages('news',remoteMsgs=>{
     if(!remoteMsgs.length)return;
     const localIds=new Set(S.msgs.news.filter(m=>m.id).map(m=>m.id));
@@ -2564,7 +2558,7 @@ ${u.bio?`<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill="n
 </div>
 </div>`);
   $('#pfMsg').onclick=()=>{closeModal();openPrivateChat(uidp);};
-  $('#pfCall').onclick=()=>{closeModal();openPrivateChat(uidp);setTimeout(()=>CallManager.startCall(uidp, 'audio'), 500);};
+  $('#pfCall').onclick=()=>{closeModal();openPrivateChat(uidp);setTimeout(()=>CallManager.startCall(uidp, 'audio'), 300);};
 }
 
 function openPrivateChat(otherUn){
@@ -2883,7 +2877,7 @@ function paintSettings(){
 <button class="st-row" data-v="data"><span class="st-ico" style="background:#00a884">${ic('db')}</span><span class="st-t"><b>Data & Storage</b><span>Firebase RTDB + Storage</span></span>${ic('chev','chev')}</button>
 <button class="st-row" data-v="lang"><span class="st-ico" style="background:#3b82f6">${ic('globe')}</span><span class="st-t"><b>Language</b><span>English</span></span>${ic('chev','chev')}</button>
 <div class="st-sec">Support</div>
-<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v3.8 · Firebase + WebRTC</span></span>${ic('chev','chev')}</button>`;
+<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v3.8 · Firebase</span></span>${ic('chev','chev')}</button>`;
   if(setView==='profile')body=`
 <div class="st-me" style="flex-direction:column;text-align:center"><div class="c-ava" id="pfAva" style="width:82px;height:82px;font-size:36px;${S.me.avatar?`background:url(${S.me.avatar}) center/cover`:`background:linear-gradient(135deg,${S.me.g[0]},${S.me.g[1]})`}">${S.me.avatar?'':S.me.e}</div>
 <button class="btn-ghost" id="pfUpload" style="width:auto;padding:8px 16px;margin-top:8px;font-size:12px">📷 Upload photo</button>
@@ -3053,222 +3047,216 @@ function notifPush(u,text){
   $('#toasts').appendChild(n);setTimeout(()=>{n.style.transition='.3s';n.style.opacity='0';setTimeout(()=>n.remove(),300)},4500);
 }
 
-/* ===== WEBRTC CALL SYSTEM ===== */
+// ===== FULL WEBRTC CALL MANAGER =====
 const CallManager = {
   initialized: false,
   localStream: null,
   remoteStream: null,
   peerConnection: null,
   callTimer: null,
-  callState: 'idle', // idle, calling, ringing, active, ended
+  callState: 'idle',
   targetUser: null,
   callType: 'audio',
   isInitiator: false,
   candidates: [],
-  
-  init(){
-    if(this.initialized) return;
+  _answerListener: null,
+  _signalListener: null,
+  _notifElement: null,
+
+  init() {
+    if (this.initialized) return;
     this.initialized = true;
     this.bindUI();
     this.listenForCalls();
     console.log('✅ CallManager initialized with WebRTC');
   },
-  
-  bindUI(){
-    // Call button in chat header
+
+  bindUI() {
     const hCall = document.getElementById('hCall');
-    if(hCall && !hCall.dataset.bound){
+    if (hCall && !hCall.dataset.bound) {
       hCall.dataset.bound = '1';
-      hCall.addEventListener('click', (e)=>{
+      hCall.addEventListener('click', (e) => {
         e.stopPropagation();
-        if(!S.cur || !S.me) return;
-        if(S.cur === 'global' || S.cur === 'news' || S.cur === 'saved' || S.cur === 'ai_assistant'){
-          toast('📞 Calls available only in private chats and groups','⚠️');
+        if (!S.cur || !S.me) return;
+        
+        if (S.cur === 'global' || S.cur === 'news' || S.cur === 'saved' || S.cur === 'ai_assistant') {
+          toast('📞 Calls available only in private chats', '⚠️');
           return;
         }
+        
         let targetUser;
-        if(S.cur.startsWith('pm_')){
-          const parts = S.cur.replace('pm_','').split('_');
-          const other = parts.find(p => p !== S.me.un);
-          targetUser = other;
-        } else if(S.groups[S.cur]){
-          toast('👥 Group calls coming soon!','📞');
+        if (S.cur.startsWith('pm_')) {
+          const parts = S.cur.replace('pm_', '').split('_');
+          targetUser = parts.find(p => p !== S.me.un);
+        } else if (S.groups[S.cur]) {
+          toast('👥 Group calls coming soon!', '📞');
           return;
         } else {
-          toast('📞 Call not available','⚠️');
+          toast('📞 Call not available', '⚠️');
           return;
         }
+        
         this.showCallTypeModal(targetUser);
       });
     }
-    
-    // End call button
+
+    // End call buttons
     const ccEnd = document.getElementById('ccEnd');
-    if(ccEnd && !ccEnd.dataset.bound){
-      ccEnd.dataset.bound='1';
-      ccEnd.addEventListener('click', ()=>{
-        this.endCall();
-      });
+    if (ccEnd && !ccEnd.dataset.bound) {
+      ccEnd.dataset.bound = '1';
+      ccEnd.addEventListener('click', () => this.endCall());
     }
-    
-    // Close call button in header
+
     const csEnd = document.getElementById('csEndCall');
-    if(csEnd && !csEnd.dataset.bound){
-      csEnd.dataset.bound='1';
-      csEnd.addEventListener('click', ()=>{
-        this.endCall();
-      });
+    if (csEnd && !csEnd.dataset.bound) {
+      csEnd.dataset.bound = '1';
+      csEnd.addEventListener('click', () => this.endCall());
     }
-    
-    // Mute button
+
+    // Mute
     const ccMute = document.getElementById('ccMute');
-    if(ccMute && !ccMute.dataset.bound){
-      ccMute.dataset.bound='1';
-      ccMute.addEventListener('click', ()=>{
+    if (ccMute && !ccMute.dataset.bound) {
+      ccMute.dataset.bound = '1';
+      ccMute.addEventListener('click', () => {
         ccMute.classList.toggle('on');
-        if(this.localStream){
+        if (this.localStream) {
           this.localStream.getAudioTracks().forEach(t => t.enabled = !ccMute.classList.contains('on'));
         }
-        toast(ccMute.classList.contains('on')?'🔇 Muted':'🎤 Unmuted','🔊');
+        toast(ccMute.classList.contains('on') ? '🔇 Muted' : '🎤 Unmuted', '🔊');
       });
     }
-    
-    // Video button
+
+    // Video
     const ccVideo = document.getElementById('ccVideo');
-    if(ccVideo && !ccVideo.dataset.bound){
-      ccVideo.dataset.bound='1';
-      ccVideo.addEventListener('click', ()=>{
+    if (ccVideo && !ccVideo.dataset.bound) {
+      ccVideo.dataset.bound = '1';
+      ccVideo.addEventListener('click', () => {
         ccVideo.classList.toggle('on');
-        if(this.localStream){
+        if (this.localStream) {
           this.localStream.getVideoTracks().forEach(t => t.enabled = !ccVideo.classList.contains('on'));
         }
-        toast(ccVideo.classList.contains('on')?'📹 Camera off':'📷 Camera on','📹');
+        toast(ccVideo.classList.contains('on') ? '📹 Camera off' : '📷 Camera on', '📹');
       });
     }
-    
-    // Speaker button
+
+    // Speaker
     const ccSpeaker = document.getElementById('ccSpeaker');
-    if(ccSpeaker && !ccSpeaker.dataset.bound){
-      ccSpeaker.dataset.bound='1';
-      ccSpeaker.addEventListener('click', ()=>{
+    if (ccSpeaker && !ccSpeaker.dataset.bound) {
+      ccSpeaker.dataset.bound = '1';
+      ccSpeaker.addEventListener('click', () => {
         ccSpeaker.classList.toggle('on');
-        // Note: Speaker control via WebRTC is limited, but we can toggle audio output
-        toast(ccSpeaker.classList.contains('on')?'🔊 Speaker on':'🔉 Speaker off','🔊');
+        toast(ccSpeaker.classList.contains('on') ? '🔊 Speaker on' : '🔉 Speaker off', '🔊');
       });
     }
   },
-  
-  showCallTypeModal(targetUser){
-    const u = S.users[targetUser] || {name:targetUser, e:'👤'};
+
+  showCallTypeModal(targetUser) {
+    const u = S.users[targetUser] || { name: targetUser, e: '👤' };
     openModal(`
-<div class="md-head"><b>📞 Call ${esc(u.name)}</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-<div class="md-body" style="text-align:center;padding:20px 0">
-<div style="font-size:48px;margin:8px 0">${u.e || '👤'}</div>
-<div style="font-size:18px;font-weight:800">${esc(u.name)}</div>
-<div style="color:var(--tx2);margin:4px 0 16px">@${esc(targetUser)}</div>
-<div style="display:flex;gap:20px;justify-content:center">
-<button class="ic-btn" style="width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callAudioBtn">📞</button>
-<button class="ic-btn" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8e2de2,#4a00e0);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callVideoBtn">📹</button>
-</div>
-<div style="display:flex;gap:30px;justify-content:center;margin-top:8px;font-size:11px;color:var(--tx2)"><span>Audio</span><span>Video</span></div>
-</div>
-`);
-    document.getElementById('callAudioBtn')?.addEventListener('click', ()=>{
+      <div class="md-head"><b>📞 Call ${esc(u.name)}</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <div class="md-body" style="text-align:center;padding:20px 0">
+        <div style="font-size:48px;margin:8px 0">${u.e || '👤'}</div>
+        <div style="font-size:18px;font-weight:800">${esc(u.name)}</div>
+        <div style="color:var(--tx2);margin:4px 0 16px">@${esc(targetUser)}</div>
+        <div style="display:flex;gap:20px;justify-content:center">
+          <button class="ic-btn" style="width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callAudioBtn">📞</button>
+          <button class="ic-btn" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8e2de2,#4a00e0);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callVideoBtn">📹</button>
+        </div>
+        <div style="display:flex;gap:30px;justify-content:center;margin-top:8px;font-size:11px;color:var(--tx2)"><span>Audio</span><span>Video</span></div>
+      </div>
+    `);
+    document.getElementById('callAudioBtn')?.addEventListener('click', () => {
       closeModal();
       this.startCall(targetUser, 'audio');
     });
-    document.getElementById('callVideoBtn')?.addEventListener('click', ()=>{
+    document.getElementById('callVideoBtn')?.addEventListener('click', () => {
       closeModal();
       this.startCall(targetUser, 'video');
     });
   },
-  
-  async startCall(targetUser, type){
-    if(this.callState !== 'idle'){
-      toast('Already in a call','⚠️');
+
+  async startCall(targetUser, type) {
+    if (this.callState !== 'idle') {
+      toast('Already in a call', '⚠️');
       return;
     }
-    if(targetUser === S.me.un){
-      toast('Cannot call yourself','⚠️');
+    if (targetUser === S.me.un) {
+      toast('Cannot call yourself', '⚠️');
       return;
     }
-    
+
     this.targetUser = targetUser;
     this.callType = type || 'audio';
     this.isInitiator = true;
     this.callState = 'calling';
-    
+
     toast(`📞 Calling ${esc(S.users[targetUser]?.name || targetUser)}...`, '📞');
-    
+
     try {
-      // Get user media
       const constraints = {
         audio: true,
         video: type === 'video' ? { width: 640, height: 480 } : false
       };
       this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      
-      // Show call UI
+
       this.showCallUI(targetUser, type, true);
-      
-      // Setup peer connection
+
       await this.setupPeerConnection(targetUser);
-      
-      // Send call signal
+
+      const offer = await this.peerConnection.createOffer();
+      await this.peerConnection.setLocalDescription(offer);
+
       await FB.sendCallSignal(targetUser, {
         type: 'offer',
         from: S.me.un,
         callType: type,
-        sdp: this.peerConnection.localDescription
+        sdp: offer
       });
-      
-      // Start timer
+
       this.startTimer();
-      
-      // Listen for answer
+      this.callState = 'ringing';
+
       this._answerListener = (signals) => {
         const answer = signals.find(s => s.type === 'answer' && s.from === targetUser);
-        if(answer && this.peerConnection && this.peerConnection.remoteDescription === null){
+        if (answer && this.peerConnection && this.peerConnection.remoteDescription === null) {
           this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer.sdp));
           this.callState = 'active';
-          toast('📞 Call connected!','📞');
+          toast('📞 Call connected!', '📞');
           document.getElementById('csTitle').textContent = `📞 ${esc(S.users[targetUser]?.name || targetUser)}`;
         }
       };
       FB.listenCallSignals(this._answerListener);
-      
-    } catch(err) {
+
+    } catch (err) {
       console.error('Start call error:', err);
-      toast('❌ Failed to start call: '+err.message, '❌');
+      toast('❌ Failed to start call: ' + err.message, '❌');
       this.endCall();
     }
   },
-  
-  async setupPeerConnection(targetUser){
+
+  async setupPeerConnection(targetUser) {
     const config = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun.sipnet.ru' }
       ]
     };
     this.peerConnection = new RTCPeerConnection(config);
-    
-    // Add local stream
-    if(this.localStream){
+
+    if (this.localStream) {
       this.localStream.getTracks().forEach(track => {
         this.peerConnection.addTrack(track, this.localStream);
       });
     }
-    
-    // Handle remote stream
+
     this.peerConnection.ontrack = (event) => {
       this.remoteStream = event.streams[0];
       this.showRemoteVideo(this.remoteStream);
     };
-    
-    // Handle ICE candidates
+
     this.peerConnection.onicecandidate = (event) => {
-      if(event.candidate){
+      if (event.candidate) {
         this.candidates.push(event.candidate);
         FB.sendCallSignal(targetUser, {
           type: 'candidate',
@@ -3277,46 +3265,50 @@ const CallManager = {
         });
       }
     };
-    
-    // Handle connection state
+
     this.peerConnection.onconnectionstatechange = () => {
       const state = this.peerConnection.connectionState;
       console.log('Connection state:', state);
-      if(state === 'connected'){
+      if (state === 'connected') {
         this.callState = 'active';
-        if(document.getElementById('csTitle')){
+        if (document.getElementById('csTitle')) {
           document.getElementById('csTitle').textContent = `📞 ${esc(S.users[targetUser]?.name || targetUser)}`;
         }
-      } else if(state === 'disconnected' || state === 'failed' || state === 'closed'){
-        toast('📞 Call disconnected','📞');
+      } else if (state === 'disconnected' || state === 'failed' || state === 'closed') {
+        toast('📞 Call disconnected', '📞');
         this.endCall();
       }
     };
-    
-    // Create offer if initiator
-    if(this.isInitiator){
-      const offer = await this.peerConnection.createOffer();
-      await this.peerConnection.setLocalDescription(offer);
-    }
   },
-  
-  async handleIncomingCall(from, signal){
-    if(this.callState !== 'idle'){
-      toast('Already in a call, rejecting...','⚠️');
+
+  async handleIncomingCall(from, signal) {
+    if (this.callState !== 'idle') {
+      toast('Already in a call, rejecting...', '⚠️');
       return;
     }
-    
+
     this.targetUser = from;
     this.callType = signal.callType || 'audio';
     this.isInitiator = false;
     this.callState = 'ringing';
-    
+
     const userName = S.users[from]?.name || from;
-    
+
+    if (this._notifElement) {
+      this._notifElement.remove();
+      this._notifElement = null;
+    }
+
     // Show incoming call notification
     const notif = document.createElement('div');
     notif.className = 'notif';
-    notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:301;min-width:320px;text-align:center;background:#1a1a24;border:2px solid var(--a1);border-radius:20px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.8)';
+    notif.style.cssText = `
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+      z-index:301;min-width:320px;text-align:center;
+      background:#1a1a24;border:2px solid var(--a1);
+      border-radius:20px;padding:24px;
+      box-shadow:0 30px 80px rgba(0,0,0,.8)
+    `;
     notif.innerHTML = `
       <div style="font-size:56px;margin:8px 0">${S.users[from]?.e || '📞'}</div>
       <div style="font-size:20px;font-weight:800">${esc(userName)}</div>
@@ -3327,87 +3319,84 @@ const CallManager = {
       </div>
     `;
     document.body.appendChild(notif);
-    
-    // Bring to front
-    notif.style.zIndex = '301';
-    
+    this._notifElement = notif;
+
     return new Promise((resolve) => {
       document.getElementById('acceptCallBtn').onclick = async () => {
-        notif.remove();
+        if (this._notifElement) {
+          this._notifElement.remove();
+          this._notifElement = null;
+        }
         try {
-          // Get user media
           const constraints = {
             audio: true,
             video: signal.callType === 'video' ? { width: 640, height: 480 } : false
           };
           this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
-          
-          // Show call UI
+
           this.showCallUI(from, signal.callType, false);
-          
-          // Setup peer connection
+
           await this.setupPeerConnection(from);
-          
-          // Set remote description from offer
+
           await this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp));
-          
-          // Create answer
+
           const answer = await this.peerConnection.createAnswer();
           await this.peerConnection.setLocalDescription(answer);
-          
-          // Send answer
+
           await FB.sendCallSignal(from, {
             type: 'answer',
             from: S.me.un,
             sdp: answer
           });
-          
+
           this.callState = 'active';
-          toast('📞 Call connected!','📞');
+          toast('📞 Call connected!', '📞');
           this.startTimer();
           resolve(true);
-          
-        } catch(err) {
+
+        } catch (err) {
           console.error('Accept call error:', err);
-          toast('❌ Failed to accept call','❌');
+          toast('❌ Failed to accept call', '❌');
           this.endCall();
           resolve(false);
         }
       };
-      
+
       document.getElementById('declineCallBtn').onclick = () => {
-        notif.remove();
+        if (this._notifElement) {
+          this._notifElement.remove();
+          this._notifElement = null;
+        }
         FB.sendCallSignal(from, {
           type: 'decline',
           from: S.me.un
         });
-        toast('📞 Call declined','📞');
+        toast('📞 Call declined', '📞');
         this.callState = 'idle';
         resolve(false);
       };
     });
   },
-  
-  showCallUI(targetUser, type, isInitiator){
+
+  showCallUI(targetUser, type, isInitiator) {
     const cs = document.getElementById('callScreen');
-    if(!cs) return;
-    
+    if (!cs) return;
+
     cs.classList.add('on');
-    document.getElementById('csTitle').textContent = isInitiator ? 
+    document.getElementById('csTitle').textContent = isInitiator ?
       `📞 Calling ${esc(S.users[targetUser]?.name || targetUser)}...` :
       `📞 Incoming call...`;
     document.getElementById('csTimer').textContent = '00:00';
-    
+
     const peers = document.getElementById('csPeers');
     const isVideo = type === 'video';
     peers.className = 'call-peers ' + (isVideo ? 'grid-2' : 'grid-1');
-    
-    // Show local video
+
     let localVideoHTML = '';
-    if(this.localStream && isVideo){
+    if (this.localStream && isVideo) {
       localVideoHTML = `<video class="local-video" id="localVideo" autoplay muted playsinline></video>`;
     }
-    
+
     peers.innerHTML = `
       <div class="call-peer me">
         ${localVideoHTML}
@@ -3420,123 +3409,127 @@ const CallManager = {
         <div class="cp-name"><span>${esc(S.users[targetUser]?.name || targetUser)}</span><span style="color:var(--green)"> ●</span></div>
       </div>
     `;
-    
-    // Attach local video
-    if(this.localStream && isVideo){
+
+    if (this.localStream && isVideo) {
       const localVideo = document.getElementById('localVideo');
-      if(localVideo){
+      if (localVideo) {
         localVideo.srcObject = this.localStream;
         localVideo.onloadedmetadata = () => localVideo.play();
       }
     }
-    
-    // Show remote video placeholder
-    const remoteVideo = document.getElementById('remoteVideo');
-    if(remoteVideo && this.remoteStream){
-      remoteVideo.srcObject = this.remoteStream;
-      remoteVideo.onloadedmetadata = () => remoteVideo.play();
-    }
-    
-    // Update remote ava when stream arrives
-    if(!isVideo){
-      document.getElementById('remoteAva').classList.remove('off');
-    }
   },
-  
-  showRemoteVideo(stream){
+
+  showRemoteVideo(stream) {
     const remoteVideo = document.getElementById('remoteVideo');
-    if(remoteVideo){
+    if (remoteVideo) {
       remoteVideo.srcObject = stream;
       remoteVideo.onloadedmetadata = () => remoteVideo.play();
       document.getElementById('remoteAva').classList.add('off');
     }
   },
-  
-  startTimer(){
+
+  startTimer() {
     let sec = 0;
     clearInterval(this.callTimer);
-    this.callTimer = setInterval(()=>{
+    this.callTimer = setInterval(() => {
       sec++;
       const el = document.getElementById('csTimer');
-      if(el) el.textContent = fmtDur(sec);
+      if (el) el.textContent = fmtDur(sec);
     }, 1000);
   },
-  
-  async endCall(){
+
+  async endCall() {
+    if (this.callState === 'ended' || this.callState === 'idle') return;
+    
     this.callState = 'ended';
     clearInterval(this.callTimer);
     
-    // Close peer connection
-    if(this.peerConnection){
+    if (this._notifElement) {
+      this._notifElement.remove();
+      this._notifElement = null;
+    }
+
+    if (this.peerConnection) {
       this.peerConnection.close();
       this.peerConnection = null;
     }
-    
-    // Stop streams
-    if(this.localStream){
+
+    if (this.localStream) {
       this.localStream.getTracks().forEach(t => t.stop());
       this.localStream = null;
     }
-    this.remoteStream = null;
     
-    // Hide call UI
+    if (this.remoteStream) {
+      this.remoteStream.getTracks().forEach(t => t.stop());
+      this.remoteStream = null;
+    }
+
+    const remoteVideo = document.getElementById('remoteVideo');
+    if (remoteVideo) {
+      remoteVideo.srcObject = null;
+      remoteVideo.pause();
+    }
+    const localVideo = document.getElementById('localVideo');
+    if (localVideo) {
+      localVideo.srcObject = null;
+      localVideo.pause();
+    }
+
     const cs = document.getElementById('callScreen');
-    if(cs) cs.classList.remove('on');
-    
-    // Clear Firebase signals
-    if(this.targetUser){
+    if (cs) cs.classList.remove('on');
+
+    if (this.targetUser) {
       await FB.endCall(this.targetUser);
     }
-    
-    // Remove listeners
-    if(this._answerListener){
-      // We can't easily remove specific listener, but we'll handle it via state
+
+    if (this._answerListener) {
+      FB.listenCallSignals(() => {});
     }
-    
-    // Reset
+
     this.targetUser = null;
-    this.callState = 'idle';
     this.isInitiator = false;
     this.candidates = [];
-    
-    toast('📞 Call ended','📞');
+
+    toast('📞 Call ended', '📞');
   },
-  
-  listenForCalls(){
+
+  listenForCalls() {
     FB.listenCallSignals(async (signals) => {
-      // Check for incoming offers
       const offer = signals.find(s => s.type === 'offer' && s.from !== S.me.un);
-      if(offer && this.callState === 'idle'){
+      if (offer && this.callState === 'idle') {
         await this.handleIncomingCall(offer.from, offer);
         return;
       }
-      
-      // Check for candidate messages
+
       const candidates = signals.filter(s => s.type === 'candidate' && s.from !== S.me.un);
-      for(const cand of candidates){
-        if(this.peerConnection && this.peerConnection.remoteDescription){
+      for (const cand of candidates) {
+        if (this.peerConnection && this.peerConnection.remoteDescription) {
           try {
             await this.peerConnection.addIceCandidate(new RTCIceCandidate(cand.candidate));
-          } catch(e){ console.warn('Add ICE candidate error:', e); }
+          } catch (e) {
+            console.warn('Add ICE candidate error:', e);
+          }
         }
       }
-      
-      // Check for decline
+
       const decline = signals.find(s => s.type === 'decline' && s.from !== S.me.un);
-      if(decline && this.callState === 'calling'){
-        toast('📞 Call declined by user','📞');
+      if (decline && (this.callState === 'calling' || this.callState === 'ringing')) {
+        toast('📞 Call declined by user', '📞');
         this.endCall();
       }
-      
-      // Check for answer
+
       const answer = signals.find(s => s.type === 'answer' && s.from !== S.me.un);
-      if(answer && this.peerConnection && this.peerConnection.remoteDescription === null){
+      if (answer && this.peerConnection && this.peerConnection.remoteDescription === null) {
         try {
           await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer.sdp));
           this.callState = 'active';
-          toast('📞 Call connected!','📞');
-          document.getElementById('csTitle').textContent = `📞 ${esc(S.users[this.targetUser]?.name || this.targetUser)}`;
-        } catch(e){ console.warn('Set answer error:', e); }
+          toast('📞 Call connected!', '📞');
+          if (document.getElementById('csTitle')) {
+            document.getElementById('csTitle').textContent = `📞 ${esc(S.users[this.targetUser]?.name || this.targetUser)}`;
+          }
+        } catch (e) {
+          console.warn('Set answer error:', e);
+        }
       }
     });
   }
@@ -3611,6 +3604,51 @@ document.addEventListener('keydown',e=>{
   }
 })();
 
+/* ===== KEYBOARD FIX ===== */
+(function fixKeyboard() {
+  const app = document.getElementById('app');
+  const msgs = document.getElementById('msgs');
+  
+  if (!window.visualViewport) return;
+  
+  let lastHeight = window.innerHeight;
+  
+  function handleViewportChange() {
+    const vh = window.visualViewport.height;
+    const diff = lastHeight - vh;
+    
+    if (diff > 50) {
+      document.documentElement.style.setProperty('--kb-height', diff + 'px');
+      document.documentElement.classList.add('keyboard-open');
+      
+      if (msgs) {
+        setTimeout(() => {
+          msgs.scrollTop = msgs.scrollHeight;
+        }, 150);
+      }
+    } else if (diff < -50) {
+      document.documentElement.style.setProperty('--kb-height', '0px');
+      document.documentElement.classList.remove('keyboard-open');
+    }
+    
+    lastHeight = vh;
+  }
+  
+  window.visualViewport.addEventListener('resize', handleViewportChange);
+  window.visualViewport.addEventListener('scroll', handleViewportChange);
+  
+  const txt = document.getElementById('txt');
+  if (txt) {
+    txt.addEventListener('focus', () => {
+      setTimeout(() => {
+        if (msgs) {
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+      }, 350);
+    });
+  }
+})();
+
 /* ===== AUTO-LOGIN ===== */
 (function(){
   const session = Store.get('bb_session', null);
@@ -3622,7 +3660,7 @@ document.addEventListener('keydown',e=>{
   }
 })();
 
-console.log('✅ Bitabolt v3.8 loaded with WebRTC calls, admin panel, private chats, channels');
+console.log('✅ Bitabolt v3.8 loaded with real WebRTC calls, admin panel, private chats');
 </script>
 </body>
 </html>
