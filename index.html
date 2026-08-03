@@ -127,7 +127,6 @@ h1.al-brand b{color:var(--a1)}
 .av-grads span.on{border-color:#fff;box-shadow:0 0 0 2.5px var(--bg),0 6px 18px rgba(0,0,0,.5)}
 .a-note{text-align:center;font-size:11px;color:var(--tx3);margin-top:16px;line-height:1.5;letter-spacing:.3px}
 #app{position:relative;z-index:1;display:grid;grid-template-columns:360px 1fr;height:100vh;height:var(--appH,100dvh)}
-@media(min-width:1700px){#app{grid-template-columns:400px 1fr}}
 #side{background:var(--p1);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0;min-height:0}
 .s-brand{display:flex;align-items:center;gap:11px;padding:14px 15px 8px}
 .sb-logo{width:33px;height:33px;flex:none;border-radius:10px;background:linear-gradient(135deg,var(--a1),var(--a2));display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(255,39,67,.45);transition:.25s}
@@ -246,7 +245,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .m-meta{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:3px;font-size:10.5px;color:var(--tx3);user-select:none;-webkit-user-select:none}
 .msg.mine .m-meta{color:rgba(255,255,255,.75)}
 .m-meta .edited{font-style:italic}
-.m-meta .timer{color:var(--a1);font-weight:700}
 .ticks{display:inline-flex}
 .ticks svg{width:14px;height:9px}
 .ticks.read{color:#fff;filter:drop-shadow(0 0 4px rgba(255,255,255,.6))}
@@ -285,33 +283,19 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .v-speed{font-size:10.5px;font-weight:800;color:var(--tx2);background:var(--p3);border-radius:7px;padding:1px 6px;transition:.15s;cursor:pointer}
 .msg.mine .v-speed{background:rgba(255,255,255,.2);color:#fff}
 .v-speed:hover{transform:scale(1.1)}
-.vcirc{width:180px;height:180px;border-radius:50%;overflow:hidden;position:relative;margin:3px 0;background:#000;box-shadow:0 8px 26px rgba(0,0,0,.5);cursor:pointer}
+.vcirc{width:180px;height:180px;border-radius:50%;overflow:hidden;position:relative;margin:3px 0;background:#000;box-shadow:0 8px 26px rgba(0,0,0,.5);cursor:pointer;border:2px solid rgba(255,255,255,.12)}
 .vcirc video{width:100%;height:100%;object-fit:cover}
 .vcirc .vdur{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.65);color:#fff;font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:9px}
-.vcirc .vmute{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;transition:.2s}
-.vcirc .vmute:hover{transform:scale(1.15)}
-.simvid{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:56px;background:conic-gradient(from 0deg,#ff2743,#ff6a2b,#8e2de2,#ff2743);animation:hue 6s linear infinite}
-@keyframes hue{to{filter:hue-rotate(360deg)}}
-.simvid span{animation:simb 1s ease-in-out infinite}
-@keyframes simb{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px) scale(1.06)}}
+.vcirc .vnov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px}
 .m-photo{margin:3px 0;border-radius:12px;overflow:hidden;cursor:zoom-in;max-width:300px}
 .m-photo img{display:block;width:100%;transition:.3s}
 .m-photo:hover img{transform:scale(1.04)}
-.m-video{margin:3px 0;border-radius:12px;overflow:hidden;max-width:320px;background:#000;position:relative}
-.m-video video{display:block;width:100%;max-height:400px}
-.m-video .v-play-big{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);cursor:pointer;transition:.2s}
-.m-video .v-play-big:hover{background:rgba(0,0,0,.5)}
-.m-video .v-play-big svg{width:56px;height:56px;fill:#fff;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
 .m-doc{display:flex;align-items:center;gap:10px;padding:4px 0;min-width:220px}
 .d-ico{width:42px;height:42px;flex:none;border-radius:12px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:19px}
 .msg:not(.mine) .d-ico{background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 5px 14px rgba(255,39,67,.35)}
 .d-name{font-weight:800;font-size:13px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .d-size{font-size:11px;color:var(--tx3);margin-top:1px}
 .msg.mine .d-size{color:rgba(255,255,255,.8)}
-.d-dl{margin-left:auto;width:34px;height:34px;border-radius:50%;background:var(--p3);display:flex;align-items:center;justify-content:center;color:var(--tx2);transition:.2s;flex:none}
-.msg.mine .d-dl{background:rgba(255,255,255,.2);color:#fff}
-.d-dl:hover{transform:scale(1.14)}
-.d-dl svg{width:15px;height:15px}
 .m-loc{width:240px;margin:3px 0}
 .loc-map{height:120px;border-radius:12px;position:relative;background:linear-gradient(135deg,#101822,#182430);overflow:hidden}
 .loc-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(120,160,200,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(120,160,200,.14) 1px,transparent 1px);background-size:24px 24px}
@@ -334,9 +318,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .p-line{position:relative;display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700}
 .p-pct{font-weight:800;color:var(--a1)}
 .msg.mine .p-pct{color:#fff}
-.link-preview{margin-top:6px;padding:8px 10px;border-left:3px solid var(--a1);background:rgba(255,39,67,.08);border-radius:0 8px 8px 0;font-size:12px}
-.link-preview b{display:block;color:var(--a1);margin-bottom:2px}
-.link-preview span{color:var(--tx2);display:block;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #fab{position:absolute;right:20px;bottom:calc(120px + var(--dockOffset));width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(255,39,67,.5);transition:.25s;z-index:6;opacity:0;pointer-events:none;transform:translateY(14px) scale(.8)}
 #fab.on{opacity:1;pointer-events:auto;transform:none}
 #fab:hover{transform:scale(1.1);box-shadow:0 12px 32px rgba(255,39,67,.7)}
@@ -390,19 +371,19 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .ctx-i.danger{color:#ff6b7d}
 .ctx-i.danger svg{color:#ff6b7d}
 .ctx-pad{padding:7px;min-width:210px}
-#emojiPanel{width:330px;padding:9px}
+#emojiPanel{width:min(390px,92vw);padding:10px}
 .ep-tabs{display:flex;gap:5px;margin-bottom:8px}
-.ep-tabs button{flex:1;padding:7px;border-radius:10px;font-size:12px;font-weight:800;color:var(--tx2);transition:.18s}
+.ep-tabs button{flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:800;color:var(--tx2);transition:.18s}
 .ep-tabs button.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff}
-.ep-scroll{max-height:260px;overflow-y:auto}
+.ep-scroll{max-height:340px;overflow-y:auto}
 .ep-cat{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);font-weight:800;margin:8px 2px 4px}
 .ep-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:2px}
-.ep-grid button{font-size:21px;padding:4px;border-radius:9px;transition:.13s}
+.ep-grid button{font-size:22px;padding:5px;border-radius:9px;transition:.13s}
 .ep-grid button:hover{background:var(--p3);transform:scale(1.3)}
-.ep-grid.stk{grid-template-columns:repeat(5,1fr)}
-.ep-grid.stk button{font-size:32px;padding:7px}
-.ep-grid.stk button img{width:46px;height:46px;object-fit:contain;pointer-events:none}
-.stk-new{border:1.5px dashed rgba(255,255,255,.25)!important;color:var(--tx2);display:flex;align-items:center;justify-content:center;font-size:22px!important}
+.ep-grid.stk{grid-template-columns:repeat(4,1fr)}
+.ep-grid.stk button{font-size:40px;padding:9px}
+.ep-grid.stk button img{width:52px;height:52px;object-fit:contain;pointer-events:none}
+.stk-new{border:1.5px dashed rgba(255,255,255,.25)!important;color:var(--tx2);display:flex;align-items:center;justify-content:center;font-size:26px!important}
 .stk-new:hover{border-color:var(--a1)!important;color:var(--a1)}
 #scrim{position:fixed;inset:0;background:rgba(0,0,0,.65);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:70;opacity:0;pointer-events:none;transition:.3s}
 #scrim.on{opacity:1;pointer-events:auto}
@@ -473,8 +454,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .lang .rd{width:20px;height:20px;border-radius:50%;border:2px solid var(--tx3);display:flex;align-items:center;justify-content:center;flex:none;transition:.25s}
 .lang.on .rd{border-color:var(--a1)}
 .lang.on .rd::after{content:'';width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2))}
-.lang .soon{margin-left:auto;font-size:9px;font-weight:800;letter-spacing:1px;color:var(--tx3);background:var(--p3);padding:3px 8px;border-radius:8px}
-.sess-ph{margin:7px 10px;border:1.5px dashed var(--line);border-radius:13px;padding:13px;font-size:12px;color:var(--tx3);line-height:1.5;text-align:center}
 #toasts{position:fixed;z-index:120;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none}
 .toast{background:#1d1d28;border:1px solid rgba(255,255,255,.1);border-right:3px solid var(--a1);border-radius:13px;padding:11px 16px;font-size:13px;font-weight:700;box-shadow:0 14px 36px rgba(0,0,0,.65);animation:tin .4s cubic-bezier(.2,1.3,.3,1);display:flex;gap:8px;align-items:center;max-width:min(350px,86vw)}
 @keyframes tin{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
@@ -484,7 +463,7 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .notif .c-ava{width:40px;height:40px;font-size:18px;flex:none}
 .notif-body{flex:1;min-width:0}
 .notif b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.notif span{font-size:12px;color:var(--tx2);display:block;margin-top:2px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.notif span{font-size:12px;color:var(--tx2);display:block;margin-top:2px;line-height:1.35}
 #lightbox{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,.93);display:none;align-items:center;justify-content:center;cursor:zoom-out}
 #lightbox.on{display:flex;animation:fadein .3s}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -509,8 +488,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .img-preview{position:relative;display:inline-block;margin:3px 0}
 .img-preview img{max-width:260px;max-height:200px;border-radius:12px;display:block}
 .img-preview .rm{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer}
-.drop-overlay{position:absolute;inset:0;background:rgba(255,39,67,.15);border:3px dashed var(--a1);border-radius:14px;display:none;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--a1);z-index:50;pointer-events:none}
-.drop-overlay.on{display:flex}
 .mention-list{position:absolute;bottom:100%;left:0;right:0;background:#1a1a24;border:1px solid var(--line);border-radius:12px;max-height:200px;overflow-y:auto;margin-bottom:6px;display:none;z-index:10}
 .mention-list.on{display:block}
 .mention-item{display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;transition:.15s}
@@ -518,10 +495,11 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .mention-item .c-ava{width:28px;height:28px;font-size:13px}
 .mention-item b{font-size:13px}
 .mention-item span{font-size:11px;color:var(--tx3)}
+.circ-preview{width:220px;height:220px;border-radius:50%;overflow:hidden;margin:10px auto;background:#000;border:3px solid var(--a1);box-shadow:0 14px 40px rgba(255,39,67,.35)}
+.circ-preview video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 #callScreen{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column}
 #callScreen.on{display:flex}
 .call-bg{position:absolute;inset:0;background:radial-gradient(900px 620px at 50% 30%,rgba(255,39,67,.18),transparent 60%),radial-gradient(700px 520px at 20% 80%,rgba(255,106,43,.12),transparent 60%),#050507}
-.call-bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1.4px);background-size:24px 24px;opacity:.6}
 .call-top{position:relative;z-index:2;padding:20px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0}
 .call-top .ct-sec{font-size:10px;letter-spacing:3px;color:var(--tx2);font-weight:800;text-transform:uppercase}
 .call-top .ct-timer{font-family:var(--disp);font-size:15px;font-weight:700;color:var(--tx);letter-spacing:1px;margin-left:auto;background:rgba(255,255,255,.06);padding:6px 14px;border-radius:20px;border:1px solid var(--line)}
@@ -567,7 +545,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .profile-actions button:hover{transform:translateY(-2px)}
 .profile-actions .pa-msg{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;box-shadow:0 8px 22px rgba(255,39,67,.4)}
 .profile-actions .pa-call{background:var(--green);color:#fff;box-shadow:0 8px 22px rgba(47,213,97,.4)}
-.profile-actions .pa-call.video{background:linear-gradient(135deg,#8e2de2,#4a00e0);box-shadow:0 8px 22px rgba(142,45,226,.4)}
 @media(max-width:940px){
 #auth{grid-template-columns:1fr}
 .a-left{display:none}
@@ -591,6 +568,7 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .call-peer .cp-ava{width:70px;height:70px;font-size:34px}
 .cc-btn{width:52px;height:52px}
 .cc-btn svg{width:20px;height:20px}
+#emojiPanel{width:min(350px,94vw)}
 }
 @media(max-width:480px){
 .a-card{padding:22px 18px 20px;border-radius:18px}
@@ -599,14 +577,35 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 .m-bubble{max-width:90%}
 .voice{min-width:180px}
 .vcirc{width:150px;height:150px}
-#emojiPanel{width:280px}
 .ep-grid{grid-template-columns:repeat(7,1fr)}
-.ep-grid button{font-size:19px}
+.ep-grid button{font-size:20px}
 .ctx-pad{min-width:190px}
 .modal{max-width:96vw;border-radius:18px}
 .call-peers.grid-2{grid-template-columns:1fr}
 .admin-stats{grid-template-columns:1fr}
 .profile-actions{grid-template-columns:1fr}
+}
+/* ===== PC VERSION ===== */
+@media(min-width:1200px){
+#app{grid-template-columns:400px 1fr}
+body{font-size:15px}
+.chat{padding:11px 12px}
+.c-ava{width:52px;height:52px;font-size:24px}
+.c-name{font-size:14.5px}
+.m-bubble{max-width:min(640px,68%)}
+#msgs{padding:18px 26px 12px}
+.dock{max-width:1000px}
+#emojiPanel{width:440px}
+.ep-grid{grid-template-columns:repeat(9,1fr)}
+.ep-grid.stk{grid-template-columns:repeat(5,1fr)}
+.modal{max-width:540px}
+.c-head{padding:10px 20px}
+#txt{font-size:15px}
+::-webkit-scrollbar{width:6px}
+}
+@media(min-width:1700px){
+#app{grid-template-columns:440px 1fr}
+#msgs>*{max-width:1000px}
 }
 </style>
 </head>
@@ -622,11 +621,11 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 <div class="al-feat">
 <div class="af"><div class="af-i">⚡</div><div><b>Real-time messaging</b><span>Messages sync instantly via Firebase. Voice, circles, polls — zero friction.</span></div></div>
 <div class="af"><div class="af-i">🔒</div><div><b>Private by design</b><span>PBKDF2 password hashing, AES local encryption, no phone required.</span></div></div>
-<div class="af"><div class="af-i">📞</div><div><b>HD Calls & Video</b><span>End-to-end encrypted calls via WebRTC. Group calls up to 8 people.</span></div></div>
+<div class="af"><div class="af-i">📞</div><div><b>HD Calls & Video</b><span>Audio & video calls via WebRTC. Circles, groups, channels.</span></div></div>
 <div class="af"><div class="af-i">🛡️</div><div><b>Admin Panel</b><span>Powerful admin tools to manage users and keep the network safe.</span></div></div>
 </div>
 <div class="al-pulse"><span class="pl">NETWORK<br>PULSE</span><span class="eq"><i></i><i></i><i></i><i></i><i></i><i></i></span><small>firebase realtime · connected</small></div>
-<div class="al-foot">BITABOLT v3.9 · 03.08.2026 · bitabolt.gg</div>
+<div class="al-foot">BITABOLT v4.0 · 03.08.2026 · bitabolt.gg</div>
 </div>
 </div>
 <div class="a-right">
@@ -711,7 +710,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 </div>
 <div id="pinned"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3 21 10l-4.5 1L15 17l-3.5-3.5L6 19l-2-2 5.5-5.5L6 8l6-1.5L13 2z"/></svg><div style="min-width:0"><div class="pt">Pinned message</div><div class="px" id="pinTxt"></div></div></div>
 <div id="msgs"></div>
-<div class="drop-overlay" id="dropOverlay">📎 Drop files to send</div>
 <button id="fab" title="Scroll to latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg><span class="fb hidden" id="fabB">0</span></button>
 <div class="dock" id="dockBox">
 <div id="replyBar"><span class="ric" id="rbIco">↩</span><div class="rt"><b id="rbName"></b><span id="rbTxt"></span></div><button class="icon-btn" id="rbX" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -742,7 +740,6 @@ body.wp-waves #main::before{background-image:repeating-radial-gradient(circle at
 <div id="toasts"></div>
 <div id="lightbox"><img id="lbImg" alt=""></div>
 <input type="file" id="chatImgInput" accept="image/*" style="display:none">
-<input type="file" id="chatVideoInput" accept="video/*" style="display:none">
 <input type="file" id="stkFile" accept="image/*" style="display:none">
 <!-- CALL SCREEN -->
 <div id="callScreen">
@@ -784,8 +781,8 @@ const esc=s=>String(s??'').replace(/[&<>"'`]/g,c=>({'&':'&amp;','<':'&lt;','>':'
 const sanitizePath=s=>String(s??'').replace(/[.#$[\]\/]/g,'_').slice(0,64);
 const sanitizeUsername=s=>String(s??'').toLowerCase().replace(/[^a-z0-9_]/g,'').slice(0,16);
 const sanitizeText=s=>String(s??'').slice(0,10000);
-/* SECURITY: only safe urls (https or data:image) may be rendered */
 const safeUrl=u=>/^(https:\/\/|data:image\/(png|jpe?g|gif|webp))/i.test(String(u||''))?String(u):'';
+const safeMediaUrl=u=>/^(https:\/\/|blob:|data:video\/)/i.test(String(u||''))?String(u):'';
 const avaBg=u=>{const s=safeUrl(u&&u.avatar);const g=(u&&u.g)||['#555','#333'];return s?`background:url("${s}") center/cover`:`background:linear-gradient(135deg,${g[0]},${g[1]})`;};
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
@@ -852,8 +849,8 @@ me:null,users:{},cur:null,
 msgs:{global:[],news:[],saved:[],ai_assistant:[]},
 unread:{},typing:{},
 reply:null,edit:null,pin:{},muted:{},
-search:{q:'',idx:0,ids:[]},online:{},pendingImg:null,pendingVideo:null,
-selfDestructTimers:{},editHistory:{},
+search:{q:'',idx:0,ids:[]},online:{},pendingImg:null,
+editHistory:{},
 groups:Store.get('bb_groups',{}),
 groupMembers:Store.get('bb_group_members',{}),
 channels:Store.get('bb_channels',{}),
@@ -861,13 +858,10 @@ channelSubs:Store.get('bb_channel_subs',{}),
 archived:Store.get('bb_archived',{}),
 slowMode:Store.get('bb_slowmode',{}),
 lastMsgTime:{},
-sending:false,
 set:{...DEFAULT_SETTINGS, ...Store.get('bb_settings',{})},
-messageQueue:[],
 isAdmin:false,
-aiContext:[],
 fbListeners:{},
-drafts:{},_draftChat:null,
+drafts:{},
 stickers:[],
 _onlineCount:0,
 _totalUsers:0
@@ -900,12 +894,10 @@ const EMOJI={
 'Animals':['🐶','🐱','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐵','🦄','🐺','🦅','🐙','🦋','🐝'],
 'Food':['🍕','🍔','🌮','🍣','🍜','🥐','🍩','🍪','🎂','🍓','🥑','☕','🧋','🍺','🍷','🥤']
 };
-/* FIX: was referenced but never defined — crashed every message send */
 const EMOJI_SHORTCUTS={':)':'🙂',':D':'😃',';)':'😉','<3':'❤️',':(':'🙁',":'(":'😢',':P':'😛','xD':'😆','B)':'😎',':*':'😘','>(':'😠','0_0':'😳',':o':'😮','^^':'😊'};
 const STK=['⚡','🔥','😂','❤️','🚀','👍','🎉','😎','🤯','💯','🥳','😭','🫡','💪','🤖','👾','🦄','🌍','☕','🍕'];
 const ADMIN_USERNAME = 'admin228';
-const ADMIN_PASSWORD = atob('YWRtaW4yMjg='); /* not stored in plain text */
-/* FIX: was called in chat info but never defined */
+const ADMIN_PASSWORD = atob('YWRtaW4yMjg=');
 const membersCount=()=>S._totalUsers||(Object.keys(S.users).length+1);
 const FB={
 online:false,listeners:{},storageOK:null,
@@ -918,7 +910,7 @@ await uploadBytes(p,blob,{contentType:type});
 this.storageOK=true;
 return await getDownloadURL(p);
 }catch(e){
-if(this.storageOK!==false){this.storageOK=false;toast('Media cloud unavailable','⚠️');}
+if(this.storageOK!==false){this.storageOK=false;toast('Media cloud unavailable — using direct embed','⚠️');}
 return null;
 }
 },
@@ -965,7 +957,6 @@ const data=snap.val()||{},onlineMap={};
 let total=0,onCount=0;const now=Date.now();
 Object.entries(data).forEach(([uid,v])=>{
 if(v.presence){
-/* FIX: accurate online — stale sessions (>90s no heartbeat) count as offline */
 const fresh=!!v.presence.online&&(now-(v.presence.lastSeen||0)<90000);
 onlineMap[uid]={...v.presence,online:fresh};
 if(fresh) onCount++;
@@ -980,18 +971,20 @@ cb(onlineMap);
 });
 }catch(e){console.warn('[FB] presence listen:',e);}
 },
+/* FIX: message stored under its OWN id — kills duplicates */
 async sendMsg(chatId,msg,user){
 try{
 const safeChatId=sanitizePath(chatId);
-const msgRef=ref(db,'chats/'+safeChatId+'/messages');
-const newRef=push(msgRef);
-const payload={id:newRef.key,u:user.un,text:(msg.type==='sticker'?String(msg.text||'').slice(0,300000):sanitizeText(msg.text||'')),type:msg.type||'text',t:Date.now(),st:'sent'};
+const key=sanitizePath(msg.id||uid());
+const payload={id:key,u:user.un,text:(msg.type==='sticker'?String(msg.text||'').slice(0,300000):sanitizeText(msg.text||'')),type:msg.type||'text',t:msg.t||Date.now(),st:'sent'};
 if(msg.reply)payload.reply=msg.reply;
 if(msg.dur)payload.dur=msg.dur;
 if(msg.wf)payload.wf=msg.wf;
-if(msg.img){const su=safeUrl(msg.img);if(su&&su.length<=1200000)payload.img=su;}
-if(msg.url&&/^https?:/.test(msg.url))payload.url=msg.url;
-await set(newRef,payload);
+if(msg.img){const su=safeUrl(msg.img);if(su&&su.length<=1500000)payload.img=su;}
+if(msg.url){const mu=safeMediaUrl(msg.url);if(mu&&mu.length<=1500000)payload.url=mu;}
+if(msg.q)payload.q=sanitizeText(msg.q);
+if(msg.opts)payload.opts=msg.opts;
+await set(ref(db,'chats/'+safeChatId+'/messages/'+key),payload);
 if(Math.random() < 0.05) this.trimMessages(chatId,200);
 }catch(e){console.warn('[FB] sendMsg:',e);}
 },
@@ -1004,7 +997,7 @@ if(this.listeners['msg_'+chatId])off(ref(db,'chats/'+sanitizePath(chatId)+'/mess
 const msgQ=query(ref(db,'chats/'+sanitizePath(chatId)+'/messages'),limitToLast(200));
 this.listeners['msg_'+chatId]=onValue(msgQ,snap=>{
 const data=snap.val()||{};
-cb(Object.values(data).sort((a,b)=>a.t-b.t));
+cb(Object.values(data).sort((a,b)=>(a.t||0)-(b.t||0)));
 });
 }catch(e){console.warn('[FB] listenMsg:',e);}
 },
@@ -1013,7 +1006,7 @@ try{
 const snap=await get(ref(db,'chats/'+sanitizePath(chatId)+'/messages'));
 if(!snap.exists())return;
 const data=snap.val();
-const keys=Object.keys(data).sort((a,b)=>data[a].t-data[b].t);
+const keys=Object.keys(data).sort((a,b)=>(data[a].t||0)-(data[b].t||0));
 if(keys.length>keep){
 const updates={};
 keys.slice(0,keys.length-keep).forEach(k=>updates['chats/'+sanitizePath(chatId)+'/messages/'+k]=null);
@@ -1073,19 +1066,19 @@ if(v.profile)S.users[uid]={...S.users[uid],...v.profile,id:uid};
 Store.set(kU(), S.users);
 }catch(e){console.warn('[FB] fetchUsers:',e);}
 },
-async getChannelSubs(channelId){
-try{
-const snap=await get(ref(db,'channels/'+sanitizePath(channelId)+'/subs'));
-return snap.val()||{};
-}catch(e){return{};}
-},
 async subscribeChannel(channelId,un){
 try{await set(ref(db,'channels/'+sanitizePath(channelId)+'/subs/'+sanitizePath(un)),{t:Date.now()});}catch(e){}
 },
 async unsubscribeChannel(channelId,un){
 try{await remove(ref(db,'channels/'+sanitizePath(channelId)+'/subs/'+sanitizePath(un)));}catch(e){}
 },
-/* === CALL SIGNALING (FIXED: signals are stored per-type so they no longer overwrite each other) === */
+/* groups & channels cloud sync */
+async createGroupRemote(id,meta){try{await set(ref(db,'groups/'+sanitizePath(id)+'/meta'),meta);}catch(e){}},
+async joinGroupRemote(id,un,join){try{await set(ref(db,'groups/'+sanitizePath(id)+'/members/'+sanitizePath(un)),join?{t:Date.now()}:null);}catch(e){}},
+listenGroups(cb){try{this.listeners.groups=onValue(ref(db,'groups'),snap=>cb(snap.val()||{}));}catch(e){}},
+async createChannelRemote(id,meta){try{await set(ref(db,'channels/'+sanitizePath(id)+'/meta'),meta);}catch(e){}},
+listenChannels(cb){try{this.listeners.chans=onValue(ref(db,'channels'),snap=>cb(snap.val()||{}));}catch(e){}},
+/* CALL SIGNALING */
 async sendCallSignal(target, signal){
 try{
 const base='calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un);
@@ -1128,7 +1121,7 @@ if(!node||typeof node!=='object')continue;
 let newest=0;
 ['offer','answer','decline','end'].forEach(k=>{if(node[k]&&node[k].t)newest=Math.max(newest,node[k].t);});
 if(node.candidates)Object.values(node.candidates).forEach(c=>{if(c&&c.t)newest=Math.max(newest,c.t);});
-if(newest&&now-newest>90000)await remove(ref(db,'calls/'+sanitizePath(S.me.un)+'/'+sanitizePath(from)));
+if(newest&&now-newest>120000)await remove(ref(db,'calls/'+sanitizePath(S.me.un)+'/'+sanitizePath(from)));
 }
 }catch(e){}
 }
@@ -1244,14 +1237,8 @@ if(un===ADMIN_USERNAME){
 if(pw===ADMIN_PASSWORD){
 RateLimit.record('login',true);
 const adminAcc={
-un:ADMIN_USERNAME,
-name:'Administrator',
-e:'👑',
-g:['#ffd700','#ffed4e'],
-bio:'System Administrator',
-joined:Date.now(),
-avatar:'',
-isAdmin:true,
+un:ADMIN_USERNAME,name:'Administrator',e:'👑',g:['#ffd700','#ffed4e'],
+bio:'System Administrator',joined:Date.now(),avatar:'',isAdmin:true,
 pw:{hash:'admin',salt:'admin',iv:'admin'}
 };
 const all=accounts();
@@ -1291,7 +1278,7 @@ S.msgs.global=[
 {id:uid(),sys:1,t:now+1,text:'⚡ Messages sync in real-time via Firebase. Say hello!'}
 ];
 S.msgs.news=[
-{id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 3.9 is here.**\n• 📞 Fixed audio & video calls (WebRTC + Firebase signaling)\n• 🎨 Custom stickers — create your own!\n• 🟢 Accurate online counter (heartbeat presence)\n• 🤖 Smarter AI assistant (math, units, games)\n• 🛡️ Hardened security layer\n• ⌨️ Keyboard no longer hides the input',views:'—'},
+{id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 4.0 is here.**\n• 🐛 Fixed duplicate messages (single ID system)\n• 📞 Incoming calls now pop up correctly\n• 📹 Video circles — record & send!\n• 👥 Groups & channels now sync via cloud\n• 📷 Photos compressed + uploaded to Storage\n• 🖥️ PC version improvements',views:'—'},
 {id:uid(),u:'ch',t:now-1200e3,text:'🔒 Your data is cached locally and synced to the cloud. Works offline, syncs when back online.\n📱 Lite mode for smooth performance on budget phones.',views:'—'}
 ];
 S.msgs.saved=[{id:uid(),sys:1,t:now,text:'🔖 This is your private cloud — forward anything here or write notes to yourself.'}];
@@ -1308,7 +1295,6 @@ S.set = {...DEFAULT_SETTINGS, ...S.set, ...Store.get(kS(),{})};
 S.users=Store.get(kU(),{});
 S.msgs=Store.get(kM(),null)||{global:[],news:[],saved:[],ai_assistant:[]};
 if(!S.msgs.ai_assistant)S.msgs.ai_assistant=[];
-S.stickers=Store.get(kStk(),[]);
 Object.values(S.msgs).forEach(arr=>arr.forEach(m=>{
 if(typeof m.url==='string'&&m.url.startsWith('blob:')){m.url=null;m.sim=true;}
 }));
@@ -1318,6 +1304,7 @@ S.channels=Store.get('bb_channels',{});
 S.channelSubs=Store.get('bb_channel_subs',{});
 S.archived=Store.get('bb_archived',{});
 S.slowMode=Store.get('bb_slowmode',{});
+S.stickers=Store.get(kStk(),[]);
 if(!S.msgs.global.length&&!S.msgs.news.length)seedFresh();
 if(!S.msgs.ai_assistant.length)S.msgs.ai_assistant=[{id:uid(),sys:1,t:Date.now(),text:'🤖 Привет! Я твой AI-ассистент. Задавай любые вопросы!'}];
 applyAccent();
@@ -1350,7 +1337,7 @@ function startFirebaseListeners(){
 if(!S.me)return;
 FB.listenPresence(onlineMap=>{
 renderList();
-if(S.cur)paintHead();
+if(S.cur){paintHead();renderMsgs();}
 const onCount = Object.values(onlineMap).filter(p => p.online).length;
 const totalUsers = Object.keys(S.users).length + 1;
 $('#meStatus').textContent = onCount > 1 ? onCount+' online' : 'online';
@@ -1360,38 +1347,28 @@ sn.classList.remove('off');
 sn.innerHTML = `<i></i>${onCount} online · ${totalUsers} members`;
 }
 });
-/* FIX: heartbeat keeps presence accurate — every 25s we prove we are online */
 setInterval(()=>{if(S.me&&navigator.onLine)FB.setPresence(S.me.un,true);},25000);
-FB.listenMessages('global',remoteMsgs=>{
+const mergeRemote=(cid,remoteMsgs)=>{
 if(!remoteMsgs.length)return;
-const localIds=new Set(S.msgs.global.filter(m=>m.id).map(m=>m.id));
+if(!S.msgs[cid])S.msgs[cid]=[];
+const localIds=new Set(S.msgs[cid].filter(m=>m.id).map(m=>m.id));
 let added=false;
 remoteMsgs.forEach(rm=>{
+if(!rm||!rm.id)return;
 if(!localIds.has(rm.id)){
-S.msgs.global.push(rm);added=true;
+S.msgs[cid].push(rm);added=true;
 const own=rm.u===S.me.un;
-if(!own && !document.hidden && S.cur==='global'){sndRecv();}
-if(!own && S.cur!=='global'){S.unread['global']=(S.unread['global']||0)+1;}
+if(!own && !document.hidden && S.cur===cid){sndRecv();}
+if(!own && S.cur!==cid){S.unread[cid]=(S.unread[cid]||0)+1;}
 } else {
-const existing = S.msgs.global.find(m=>m.id===rm.id);
-if(existing && rm.t>existing.t){Object.assign(existing,rm);added=true;}
+const existing = S.msgs[cid].find(m=>m.id===rm.id);
+if(existing && (rm.t||0)>(existing.t||0)){Object.assign(existing,rm);added=true;}
 }
 });
-if(added){S.msgs.global.sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
-});
-FB.listenMessages('news',remoteMsgs=>{
-if(!remoteMsgs.length)return;
-const localIds=new Set(S.msgs.news.filter(m=>m.id).map(m=>m.id));
-let added=false;
-remoteMsgs.forEach(rm=>{
-if(!localIds.has(rm.id)){
-S.msgs.news.push(rm);added=true;
-if(S.cur==='news'&&!document.hidden)sndRecv();
-if(S.cur!=='news'){S.unread['news']=(S.unread['news']||0)+1;}
-}
-});
-if(added){S.msgs.news.sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
-});
+if(added){S.msgs[cid].sort((a,b)=>(a.t||0)-(b.t||0));persist();renderMsgs();renderList();}
+};
+FB.listenMessages('global',rm=>mergeRemote('global',rm));
+FB.listenMessages('news',rm=>mergeRemote('news',rm));
 FB.listenTyping('global',typingData=>{
 const typers=Object.entries(typingData).filter(([u,d])=>u!==S.me.un&&Date.now()-d.t<3000).map(([u])=>u);
 if(typers.length)S.typing['global']={u:typers,t:Date.now()};else delete S.typing['global'];
@@ -1414,6 +1391,26 @@ m.rx=Object.keys(rx).length?rx:null;
 S.msgs.global.forEach(m=>{if(m.rx&&!touched.has(m.id))m.rx=null;});
 if(S.cur==='global')renderMsgs();
 });
+/* FIX: groups & channels now sync from cloud */
+FB.listenGroups(data=>{
+Object.entries(data).forEach(([id,node])=>{
+if(!node||!node.meta)return;
+S.groups[id]={...node.meta};
+const rm=node.members?Object.keys(node.members):[];
+const lm=S.groupMembers[id]||[];
+S.groupMembers[id]=[...new Set([...lm,...rm])];
+});
+Store.set('bb_groups',S.groups);Store.set('bb_group_members',S.groupMembers);
+renderList();if(S.cur&&S.groups[S.cur])paintHead();
+});
+FB.listenChannels(data=>{
+Object.entries(data).forEach(([id,node])=>{
+if(!node||!node.meta)return;
+S.channels[id]={...S.channels[id],...node.meta};
+});
+Store.set('bb_channels',S.channels);
+renderList();
+});
 }
 function getPrivateChatId(un1,un2){
 const sorted=[un1,un2].sort();
@@ -1425,8 +1422,7 @@ function prevText(m){
 if(!m)return'';const who=(m.u==='me'||m.u===S.me?.un)?'You: ':'';
 if(m.sys)return m.text;
 if(m.type==='voice')return who+'🎤 Voice ('+fmtDur(m.dur)+')';
-if(m.type==='video')return who+'📹 Video';
-if(m.type==='videoFile')return who+'🎬 Video';
+if(m.type==='circle')return who+'📹 Circle ('+fmtDur(m.dur||0)+')';
 if(m.type==='photo')return who+'📷 Photo';
 if(m.type==='sticker')return who+(String(m.text||'').startsWith('data:')?'🎨 sticker':m.text+' sticker');
 if(m.type==='poll')return '📊 '+m.q;
@@ -1493,7 +1489,7 @@ const rows = [
 .sort((a,b)=>{
 if(b.c.id==='global') return 1;
 if(a.c.id==='global') return -1;
-return b.t-a.t;
+return (b.t||0)-(a.t||0);
 });
 const onCount = S._onlineCount || Object.values(S.online).filter(p=>p.online).length;
 const totalUsers = S._totalUsers || (Object.keys(S.users).length + 1);
@@ -1501,13 +1497,10 @@ $('#chatCount').textContent=rows.length+' · '+onCount+'/'+totalUsers+' online';
 $('#chatList').innerHTML=rows.map(({c},i)=>{
 const m=chatMeta(c),lm=lastMsg(c.id),un=S.unread[c.id]||0;
 const ty=S.typing[c.id]&&Date.now()-S.typing[c.id].t<3500?S.typing[c.id].u:null;
-const isGroup = c.type === 'group';
 const isChannel = c.type === 'channel';
-const isPrivate = c.type === 'private';
-const isArchived = S.archived[c.id];
 const subsCount = c.subs || 0;
-return `<div class="chat ${S.cur===c.id?'on':''}" data-id="${c.id}" style="animation-delay:${i*40}ms;${isArchived?'opacity:.5;':''}">
-<div class="c-ava" style="background:linear-gradient(135deg,${m.g[0]},${m.g[1]})">${isGroup?'👥':isChannel?'📢':m.e}${c.id==='global'?'<span class="on-dot"></span>':''}</div>
+return `<div class="chat ${S.cur===c.id?'on':''}" data-id="${c.id}" style="animation-delay:${i*40}ms">
+<div class="c-ava" style="background:linear-gradient(135deg,${m.g[0]},${m.g[1]})">${c.type==='group'?'👥':isChannel?'📢':m.e}${c.id==='global'?'<span class="on-dot"></span>':''}</div>
 <div class="c-body">
 <div class="c-top"><span class="c-name">${esc(m.title)}${m.ver?'<span class="vbadge"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>':''}</span>
 <span class="c-time">${lm?fmtT(lm.t):''}</span></div>
@@ -1521,7 +1514,6 @@ $$('#chatList .chat').forEach(el=>el.onclick=()=>openChat(el.dataset.id));
 }
 const msgsEl=$('#msgs');
 function openChat(id){
-/* drafts: save previous chat draft, restore new one */
 if(S.cur&&S.cur!==id){S.drafts[S.cur]=txt.value||'';}
 S.cur=id;S.reply=null;S.edit=null;hideReply(true);
 txt.value=S.drafts[id]||'';txt.style.height='auto';toggleMain();
@@ -1548,46 +1540,32 @@ paintHead();renderMsgs(true);renderList();
 $('#app').classList.add('inchat');
 $('#fab').classList.remove('on');$('#fabB').classList.add('hidden');
 $('#txt').placeholder=id==='saved'?'Note to yourself':'Message';
-/* only admins can write into official news */
 $('#dockBox').style.display=(id==='news'&&!S.isAdmin)?'none':'';
 if(innerWidth>940&&matchMedia('(pointer:fine)').matches)$('#txt').focus();
 const hCall = document.getElementById('hCall');
 if(hCall){
-const isCallable = isPrivate || (isGroup && S.groupMembers[id]?.length > 0);
+const isCallable = isPrivate || isGroup;
 hCall.style.display = isCallable ? '' : 'none';
 }
-if(isPrivate && !S.fbListeners['msg_'+id]){
+if((isPrivate||isChannel||isGroup) && !S.fbListeners['msg_'+id]){
 FB.listenMessages(id, remoteMsgs => {
 if(!remoteMsgs.length)return;
-const localIds=new Set((S.msgs[id]||[]).filter(m=>m.id).map(m=>m.id));
+if(!S.msgs[id])S.msgs[id]=[];
+const localIds=new Set(S.msgs[id].filter(m=>m.id).map(m=>m.id));
 let added=false;
 remoteMsgs.forEach(rm=>{
+if(!rm||!rm.id)return;
 if(!localIds.has(rm.id)){
-if(!S.msgs[id])S.msgs[id]=[];
 S.msgs[id].push(rm);added=true;
 const own=rm.u===S.me.un;
 if(!own && !document.hidden && S.cur===id){sndRecv();}
 if(!own && S.cur!==id){S.unread[id]=(S.unread[id]||0)+1;}
+}else{
+const ex=S.msgs[id].find(m=>m.id===rm.id);
+if(ex&&(rm.t||0)>=(ex.t||0)){Object.assign(ex,rm);added=true;}
 }
 });
-if(added){S.msgs[id].sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
-});
-S.fbListeners['msg_'+id]=true;
-}
-if(isChannel && !S.fbListeners['msg_'+id]){
-FB.listenMessages(id, remoteMsgs => {
-if(!remoteMsgs.length)return;
-const localIds=new Set((S.msgs[id]||[]).filter(m=>m.id).map(m=>m.id));
-let added=false;
-remoteMsgs.forEach(rm=>{
-if(!localIds.has(rm.id)){
-if(!S.msgs[id])S.msgs[id]=[];
-S.msgs[id].push(rm);added=true;
-if(!document.hidden && S.cur===id){sndRecv();}
-if(S.cur!==id){S.unread[id]=(S.unread[id]||0)+1;}
-}
-});
-if(added){S.msgs[id].sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
+if(added){S.msgs[id].sort((a,b)=>(a.t||0)-(b.t||0));persist();renderMsgs();renderList();}
 });
 S.fbListeners['msg_'+id]=true;
 }
@@ -1616,8 +1594,7 @@ const onlineCount = members.filter(m => S.online[m]?.online).length;
 $('#headSub').textContent = `${onlineCount}/${members.length} online`;
 }else if(isChannel){
 const subs = S.channelSubs[S.cur] || [];
-const members = S.groupMembers[S.cur] || [];
-$('#headSub').textContent = `${subs.length} subscribers · ${members.length} admins`;
+$('#headSub').textContent = `${subs.length} subscribers`;
 }else if(isPrivate){
 const parts=S.cur.replace('pm_','').split('_');
 const other=parts.find(p=>p!==S.me.un);
@@ -1640,7 +1617,6 @@ let h=esc(t)
 .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
 .replace(/@([a-z0-9_]{3,16})/gi, '<span class="mention" style="color:#7ab8ff;font-weight:700">@$1</span>')
 .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
-/* FIX: no inline onclick (XSS-safe) — revealed via delegation */
 .replace(/\|\|(.+?)\|\|/g,'<span class="spoiler">$1</span>');
 if(hi){const re=new RegExp('('+hi.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');h=h.replace(re,'<mark class="search-highlight">$1</mark>');}
 return h;
@@ -1660,6 +1636,11 @@ return `<div class="voice" data-mid="${m.id}">
 <div class="v-body"><div class="v-wave">${(m.wf||Array(30).fill(50)).map(h=>`<i style="height:${h}%"></i>`).join('')}</div>
 <div class="v-row"><span>${fmtDur(m.dur||3)}</span><button class="v-speed">1×</button></div></div></div>`;
 }
+if(m.type==='circle'){
+const src=safeMediaUrl(m.url);
+if(!src)return `<div class="vcirc"><div class="vnov">📹</div><div class="vdur">unavailable</div></div>`;
+return `<div class="vcirc"><video src="${src}" preload="metadata" playsinline loop></video><div class="vdur">${fmtDur(m.dur||0)}</div></div>`;
+}
 if(m.type==='photo'){
 let src = safeUrl(m.img || m.url);
 if(!src) src = 'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320"><rect width="480" height="320" fill="#14141d"/><text x="240" y="170" font-size="44" text-anchor="middle">📷</text></svg>');
@@ -1677,8 +1658,14 @@ return `<div class="m-poll" data-mid="${m.id}"><div class="p-q">📊 ${esc(m.q)}
 ${m.opts.map((o,i)=>{const v=o.v||[];const p=tot?Math.round(v.length/tot*100):0,my=v.includes(S.me?.un)||v.includes('me');
 return `<div class="p-opt ${my?'my':''}" data-i="${i}"><div class="p-fill" data-w="${p}"></div><div class="p-line"><span>${my?'✓ ':''}${esc(o.t)}</span><span class="p-pct">${p}%</span></div></div>`;}).join('')}</div>`;
 }
-const txt = textHTML(m.text||'',hi);
-return `<div class="m-text">${txt}</div>`;
+if(m.type==='doc'){
+return `<div class="m-doc"><div class="d-ico">📄</div><div><div class="d-name">${esc(m.fname||'file')}</div><div class="d-size">${esc(m.fsize||'')}</div></div></div>`;
+}
+if(m.type==='loc'){
+return `<div class="m-loc"><div class="loc-map"><div class="loc-pin">📍</div></div><div class="loc-lbl">${esc(m.coords||'Location')}</div></div>`;
+}
+const txtv = textHTML(m.text||'',hi);
+return `<div class="m-text">${txtv}</div>`;
 }
 function emptyHTML(){
 if(!S.cur) return '';
@@ -1768,6 +1755,7 @@ prev=m;
 const near=msgsEl.scrollHeight-msgsEl.scrollTop-msgsEl.clientHeight<170;
 msgsEl.innerHTML=html;
 requestAnimationFrame(()=>$$('.p-fill').forEach(f=>f.style.width=f.dataset.w+'%'));
+$$('.m-photo img').forEach(im=>{im.onerror=()=>{im.onerror=null;im.src='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320"><rect width="480" height="320" fill="#14141d"/><text x="240" y="170" font-size="40" text-anchor="middle">⚠️</text></svg>');};});
 if(force||near)msgsEl.scrollTop=msgsEl.scrollHeight;
 updatePinned();
 }
@@ -1786,11 +1774,13 @@ if(exists) return null;
 S.msgs[cid].push(m);persist();
 const isPrivate = cid.startsWith('pm_');
 const isChannel = !!S.channels[cid];
-if((cid==='global' || cid==='news' || isPrivate || isChannel) && (m.u==='me'||m.u===S.me?.un) && !opts.remote && !opts.defer){
+const isGroup = !!S.groups[cid];
+if((cid==='global' || cid==='news' || isPrivate || isChannel || isGroup) && (m.u==='me'||m.u===S.me?.un) && !opts.remote && !opts.defer){
 if(isChannel){
 const subs = S.channelSubs[cid] || [];
 if(!subs.includes(S.me?.un) && !opts._force){
 toast('🔔 Subscribe to this channel to post','⚠️');
+S.msgs[cid]=S.msgs[cid].filter(x=>x.id!==m.id);persist();
 return null;
 }
 }
@@ -1837,7 +1827,7 @@ openModal(`<div class="md-head"><b>📢 Channel Info</b><button class="icon-btn 
 <div class="p-ava" style="background:linear-gradient(135deg,${ch.g?ch.g[0]:'#8e2de2'},${ch.g?ch.g[1]:'#4a00e0'})">📢</div>
 <div class="p-name">${esc(ch.name)}</div>
 <div class="p-sub">${subs.length} subscribers</div>
-<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><b>@${esc(ch.username)}</b><span>Channel link</span></div></div>
+<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><b>@${esc(ch.username||'')}</b><span>Channel link</span></div></div>
 ${ch.desc?`<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7Z"/><circle cx="12" cy="9" r="2.5"/></svg></div><div><b>${esc(ch.desc)}</b><span>description</span></div></div>`:''}
 <div style="display:flex;gap:8px;margin-top:12px">
 <button class="pa1" id="chanSubBtn" style="flex:1">${isSub?'✅ Subscribed':'🔔 Subscribe'}</button>
@@ -1847,16 +1837,15 @@ ${ch.desc?`<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill=
 $('#chanSubBtn').onclick=()=>{
 closeModal();
 toggleSubscribe(channelId);
-setTimeout(()=>showChannelInfo(channelId), 300);
 };
 $('#chanCloseBtn').onclick=closeModal;
 };
 const txt=$('#txt');
-const toggleMain=()=>$('#mainBtn').classList.toggle('send',txt.value.trim().length>0||(S.pendingImg!==null&&S.pendingImg!==undefined)||(S.pendingVideo!==null&&S.pendingVideo!==undefined));
+const toggleMain=()=>$('#mainBtn').classList.toggle('send',txt.value.trim().length>0||S.pendingImg);
 let lastTyp=0;
 txt.addEventListener('input',()=>{
 txt.style.height='auto';txt.style.height=Math.min(txt.scrollHeight,160)+'px';toggleMain();
-if(S.cur && Date.now()-lastTyp>1500){lastTyp=Date.now();if(S.cur==='global'||S.cur.startsWith('pm_'))FB.sendTyping(S.cur,S.me.un);}
+if(S.cur && Date.now()-lastTyp>1500){lastTyp=Date.now();if(S.cur==='global'||S.cur.startsWith('pm_')||S.groups[S.cur])FB.sendTyping(S.cur,S.me.un);}
 checkMentions();
 });
 txt.addEventListener('keydown',e=>{
@@ -1917,14 +1906,10 @@ result = result.replace(re, '$1'+emoji);
 }
 return result;
 }
-/* ===== AI ASSISTANT (upgraded) ===== */
+/* ===== AI ASSISTANT ===== */
 const AIContext = {
-history: [],
-userName: '',
-addMessage(role, text){
-this.history.push({role, text, t:Date.now()});
-if(this.history.length > 20) this.history.shift();
-},
+history: [],userName: '',
+addMessage(role, text){this.history.push({role, text, t:Date.now()});if(this.history.length > 20) this.history.shift();},
 clear(){this.history = [];}
 };
 const AI_JOKES=[
@@ -1933,22 +1918,19 @@ const AI_JOKES=[
 '— Что сказал HTML CSS?\n— Без тебя у меня нет стиля! 💅',
 '— Почему JavaScript разработчик ушёл из ресторана?\n— Там было слишком много this! 🍽️',
 '— Жена программиста: «Купи хлеб, если будут яйца — возьми десяток».\nОн вернулся с 10 батонами. 🍞',
-'— Доктор, у меня баг!\n— А вы пробовали выключить и включить? 🐛',
-'— 99 little bugs in the code… 99 little bugs… Take one down, patch it around… 127 little bugs in the code 🎶'
+'— Доктор, у меня баг!\n— А вы пробовали выключить и включить? 🐛'
 ];
 const AI_QUOTES=[
 '«Простота — залог надёжности» — Эдсгер Дейкстра',
 '«Любой дурак напишет код, понятный компьютеру. Хороший программист пишет код, понятный человеку» — Мартин Фаулер',
 '«Сначала реши проблему. Потом пиши код» — Джон Джонсон',
-'«Код — как шутка. Если приходится объяснять — она плохая» — Кори Хаус',
-'«Программирование — это не о том, что ты знаешь. Это о том, как быстро ты можешь разобраться» — неизвестный герой'
+'«Код — как шутка. Если приходится объяснять — она плохая» — Кори Хаус'
 ];
 const AI_FACTS=[
 '⚡ Первый компьютерный баг — настоящая моль, застрявшая в реле Mark II в 1947 году.',
 '🌐 Первый сайт в мире всё ещё работает: info.cern.ch',
 '🔐 Пароль «123456» до сих пор входит в топ-3 самых популярных паролей планеты.',
 '💾 Первый жёсткий диск IBM 350 (1956) весил около тонны и хранил 5 МБ.',
-'🛰️ Интернет возник из проекта ARPANET, первое сообщение отправлено в 1969: «LO» (система упала на «LOGIN»).',
 '🤖 Слово «робот» придумал Карел Чапек в 1920 году.',
 '📱 В среднем смартфоне сегодня больше вычислительной мощности, чем было у NASA при высадке на Луну.'
 ];
@@ -1958,11 +1940,9 @@ let expr=raw.replace(/,/g,'.').replace(/х|x|×/gi,'*').replace(/:/g,'/').replac
 .replace(/sqrt\s*\(/gi,'Math.sqrt(')
 .replace(/abs\s*\(/gi,'Math.abs(')
 .replace(/pow\s*\(/gi,'Math.pow(');
-/* balance sqrt-like opened brackets */
 const open=(expr.match(/\(/g)||[]).length, close=(expr.match(/\)/g)||[]).length;
 if(open>close)expr+=')'.repeat(open-close);
 if(!/[0-9]/.test(expr))return null;
-if(!/^[0-9+\-*/().%\s]|Math\.(sqrt|abs|pow)\(/.test(expr))return null;
 const clean=expr.replace(/Math\.(sqrt|abs|pow)/g,'');
 if(/[a-zA-Zа-яА-ЯёЁ]/.test(clean))return null;
 try{
@@ -1977,19 +1957,15 @@ async function getAIResponse(text){
 const lower = text.toLowerCase().trim();
 AIContext.addMessage('user', text);
 const userName = AIContext.userName || (S.me?.name||'друг');
-/* remember name */
 const nameM=text.match(/меня зовут\s+([a-zа-яё0-9_ ]{2,20})/i)||text.match(/my name is\s+([a-z0-9_ ]{2,20})/i);
 if(nameM){AIContext.userName=nameM[1].trim().split(' ')[0];return `🤖 Приятно познакомиться, **${AIContext.userName}**! Буду запоминать.`;}
 if(lower === '/help' || lower === 'помощь'){
 return `🤖 **Доступные команды:**\n• \`/help\` — список команд\n• \`/clear\` — очистить контекст\n• \`/stats\` — статистика чата\n• \`/joke\` — шутка\n• \`/quote\` — цитата\n• \`/fact\` — факт\n• \`/roll [N]\` — кубик 1..N\n• \`/flip\` — орёл/решка\n• \`/choose a, b, c\` — выбор варианта\n• \`/code\` — пример кода\n💡 Также я считаю выражения («2+2*2»), конвертирую единицы («36.6 c в f», «10 км в милях») и просто общаюсь!`;
 }
-if(lower === '/clear' || lower === '/очистить'){
-AIContext.clear();
-return '🧹 Контекст очищен. Начнём сначала!';
-}
+if(lower === '/clear' || lower === '/очистить'){AIContext.clear();return '🧹 Контекст очищен. Начнём сначала!';}
 if(lower === '/stats' || lower === '/статистика'){
 const totalMsgs = Object.values(S.msgs).reduce((s,arr)=>s+arr.length,0);
-const mediaCount = Object.values(S.msgs).reduce((s,arr)=>s+arr.filter(m=>['photo','video','voice','doc'].includes(m.type)).length,0);
+const mediaCount = Object.values(S.msgs).reduce((s,arr)=>s+arr.filter(m=>['photo','voice','doc','circle'].includes(m.type)).length,0);
 return `📊 **Статистика Bitabolt:**\n• Всего сообщений: **${totalMsgs}**\n• Медиафайлов: **${mediaCount}**\n• Пользователей: **${Object.keys(S.users).length+1}**\n• Онлайн сейчас: **${S._onlineCount||Object.values(S.online).filter(p=>p.online).length}**\n• Групп: **${Object.keys(S.groups).length}**\n• Каналов: **${Object.keys(S.channels).length}**`;
 }
 if(lower === '/joke' || lower === '/шутка')return pick(AI_JOKES);
@@ -2007,24 +1983,14 @@ return opts.length>=2?`🤔 Думаю… Я выбираю: **${pick(opts)}**!`
 if(lower.startsWith('/code') || lower === '/код'){
 const examples=[
 '💻 **JavaScript — FizzBuzz:**\n```javascript\nfor(let i=1;i<=100;i++){\n  if(i%15===0)console.log("FizzBuzz");\n  else if(i%3===0)console.log("Fizz");\n  else if(i%5===0)console.log("Buzz");\n  else console.log(i);\n}\n```',
-'💻 **Python — Fibonacci:**\n```python\ndef fib(n):\n    a,b=0,1\n    for _ in range(n):\n        yield a\n        a,b=b,a+b\nprint(list(fib(10)))\n```',
-'💻 **HTML — Simple card:**\n```html\n<div class="card">\n  <h2>Hello World</h2>\n  <p>Welcome to Bitabolt!</p>\n</div>\n```'
+'💻 **Python — Fibonacci:**\n```python\ndef fib(n):\n    a,b=0,1\n    for _ in range(n):\n        yield a\n        a,b=b,a+b\nprint(list(fib(10)))\n```'
 ];
 return pick(examples);
 }
-if(lower.startsWith('/translate ')||lower.startsWith('/переведи ')){
-const t=text.slice(text.indexOf(' ')+1).trim();
-return `🌐 **Перевод:**\n«${esc(t)}»\n_(В полной версии здесь будет API переводчика. Пока можешь использовать translate.google.com)_`;
-}
-/* pure math expression */
 const pureMath=aiMathAnswer(text);
 if(pureMath&&/^[\s0-9+\-*/().,%^:x×х]+$/i.test(text))return pureMath;
-/* "сколько будет ..." */
 const wb=text.match(/сколько будет\s+(.+?)\??$/i);
 if(wb){const r=aiMathAnswer(wb[1]);if(r)return r;}
-const emb=text.match(/(\d[\d\s.,+\-*/():^×xх]*\d)\s*[=?]?$/);
-if(emb){const r=aiMathAnswer(emb[1]);if(r)return r;}
-/* unit conversions */
 const c2f=text.match(/(-?\d+(?:[.,]\d+)?)\s*(?:°|градус(?:ов|а)?)?\s*(?:с|c|цельсия|цельсию|celsius)/i);
 if(c2f&&/(f|фаренгейт|fahrenheit)/i.test(lower)){const c=parseFloat(c2f[1].replace(',','.'));return `🌡️ **${c}°C = ${(c*9/5+32).toFixed(1)}°F**`;}
 const f2c=text.match(/(-?\d+(?:[.,]\d+)?)\s*(?:°|градус(?:ов|а)?)?\s*(?:ф|f|фаренгейта|fahrenheit)/i);
@@ -2033,41 +1999,19 @@ const km2mi=text.match(/(\d+(?:[.,]\d+)?)\s*(?:км|km|километр)/i);
 if(km2mi&&/(милях|миль|mi\b|miles?)/i.test(lower)){const v=parseFloat(km2mi[1].replace(',','.'));return `📏 **${v} км = ${(v*0.621371).toFixed(2)} миль**`;}
 const mi2km=text.match(/(\d+(?:[.,]\d+)?)\s*(?:милях|миль|миля|mi\b|miles?)/i);
 if(mi2km&&/(км|km|километр)/i.test(lower)){const v=parseFloat(mi2km[1].replace(',','.'));return `📏 **${v} миль = ${(v/0.621371).toFixed(2)} км**`;}
-const kg2lb=text.match(/(\d+(?:[.,]\d+)?)\s*(?:кг|kg|килограмм)/i);
-if(kg2lb&&/(фунт|lb|pound)/i.test(lower)){const v=parseFloat(kg2lb[1].replace(',','.'));return `⚖️ **${v} кг = ${(v*2.20462).toFixed(2)} фунтов**`;}
-/* time / date */
-if(/(время|который час|time\b|сколько времени)/.test(lower)){
-return `🕐 Сейчас **${new Date().toLocaleTimeString('ru-RU')}**`;
-}
+if(/(время|который час|time\b|сколько времени)/.test(lower))return `🕐 Сейчас **${new Date().toLocaleTimeString('ru-RU')}**`;
 if(/(дата|какое сегодня число|какой сегодня день|date\b)/.test(lower)){
 const now=new Date();
 return `📅 Сегодня **${now.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}**`;
 }
-/* greetings */
-if(/(привет|здравствуй|хай|hello|hi\b|hey|добрый (день|вечер|утро))/.test(lower)){
-return `🤖 Привет, ${userName}! Рад тебя видеть. Чем могу помочь? Могу посчитать, рассказать шутку (/joke) или факт (/fact).`;
-}
-if(/(как дела|как ты|how are you)/.test(lower)){
-return `🤖 У меня всё отлично — все системы в норме ⚡ А у тебя как дела, ${userName}?`;
-}
-if(/(кто ты|что ты такое|what are you|who are you)/.test(lower)){
-return `🤖 Я AI-ассистент Bitabolt v3.9. Умею:\n• 💬 общаться и запоминать контекст\n• 🧮 считать выражения\n• 🌡️ конвертировать единицы\n• 🎲 играть (/roll, /flip, /choose)\n• 💻 показывать код (/code)\nПопробуй /help!`;
-}
-if(/(спасибо|благодарю|thanks|thank you)/.test(lower)){
-return `🤖 Пожалуйста, ${userName}! Обращайся ещё ⚡`;
-}
-if(/(пока|до свидания|bye|goodbye)/.test(lower)){
-return `🤖 До встречи, ${userName}! Буду ждать 👋`;
-}
-if(/(bitabolt|битаболт|мессенджер)/.test(lower)){
-return `⚡ **Bitabolt** — глобальный мессенджер нового поколения!\n🔹 Real-time синхронизация через Firebase\n🔹 PBKDF2-хеширование паролей\n🔹 HD аудио и видеозвонки через WebRTC\n🔹 Группы, каналы, личные чаты\n🔹 Свои стикеры и AI-ассистент (это я! 🤖)\nВерсия 3.9 — самая стабильная!`;
-}
-if(/(код|code|javascript|python|питон|джаваскрипт|html|css)/.test(lower)){
-return `💻 Отличная тема! Могу показать пример — набери \`/code\`. Или спроси конкретно: «напиши fizzbuzz», «как работает webrtc» и т.д.`;
-}
-if(/(погода|weather)/.test(lower)){
-return `🌤️ У меня нет доступа к интернету в этой версии, но рекомендую: weather.com, Яндекс.Погода или Gismeteo. Могу помочь с чем-то ещё?`;
-}
+if(/(привет|здравствуй|хай|hello|hi\b|hey|добрый (день|вечер|утро))/.test(lower))return `🤖 Привет, ${userName}! Рад тебя видеть. Чем могу помочь? Могу посчитать, рассказать шутку (/joke) или факт (/fact).`;
+if(/(как дела|как ты|how are you)/.test(lower))return `🤖 У меня всё отлично — все системы в норме ⚡ А у тебя как дела, ${userName}?`;
+if(/(кто ты|что ты такое|what are you|who are you)/.test(lower))return `🤖 Я AI-ассистент Bitabolt v4.0. Умею:\n• 💬 общаться и запоминать контекст\n• 🧮 считать выражения\n• 🌡️ конвертировать единицы\n• 🎲 играть (/roll, /flip, /choose)\n• 💻 показывать код (/code)\nПопробуй /help!`;
+if(/(спасибо|благодарю|thanks|thank you)/.test(lower))return `🤖 Пожалуйста, ${userName}! Обращайся ещё ⚡`;
+if(/(пока|до свидания|bye|goodbye)/.test(lower))return `🤖 До встречи, ${userName}! Буду ждать 👋`;
+if(/(bitabolt|битаболт|мессенджер)/.test(lower))return `⚡ **Bitabolt** — глобальный мессенджер нового поколения!\n🔹 Real-time синхронизация через Firebase\n🔹 PBKDF2-хеширование паролей\n🔹 HD аудио и видеозвонки через WebRTC\n🔹 Группы, каналы, личные чаты\n🔹 Видеокружки и свои стикеры\n🔹 AI-ассистент (это я! 🤖)\nВерсия 4.0 — самая стабильная!`;
+if(/(код|code|javascript|python|питон|джаваскрипт|html|css)/.test(lower))return `💻 Отличная тема! Могу показать пример — набери \`/code\`. Или спроси конкретно: «напиши fizzbuzz» и т.д.`;
+if(/(погода|weather)/.test(lower))return `🌤️ У меня нет доступа к интернету в этой версии, но рекомендую: weather.com, Яндекс.Погода или Gismeteo.`;
 if(/(идея|idea|придумай|что делать|чем заняться)/.test(lower)){
 const ideas=[
 '💡 **Идея для проекта:** приложение для трекинга привычек с геймификацией — уровни, достижения, статистика!',
@@ -2077,14 +2021,10 @@ const ideas=[
 ];
 return pick(ideas);
 }
-if(/(почему|зачем|why)/.test(lower)){
-return `🤖 Хороший вопрос! Если коротко: большинство «почему» упираются в причины, историю или физику. Уточни вопрос — и я постараюсь дать конкретный ответ. Например: «почему небо голубое?»`;
-}
-if(/(небо голубое|sky blue)/.test(lower)){
-return `🌤️ Небо голубое из-за **рэлеевского рассеяния**: короткие (синие) волны света рассеиваются в атмосфере сильнее длинных (красных).`;
-}
+if(/(почему|зачем|why)/.test(lower))return `🤖 Хороший вопрос! Уточни — и я постараюсь дать конкретный ответ. Например: «почему небо голубое?»`;
+if(/(небо голубое|sky blue)/.test(lower))return `🌤️ Небо голубое из-за **рэлеевского рассеяния**: короткие (синие) волны света рассеиваются в атмосфере сильнее длинных (красных).`;
 const fallbacks=[
-`🤖 Интересный вопрос, ${userName}! Я обработал его с учётом нашего разговора. Попробуй уточнить или набери /help — покажу всё, что умею.`,
+`🤖 Интересный вопрос, ${userName}! Попробуй уточнить или набери /help — покажу всё, что умею.`,
 `🤖 Хм, дай подумать… Могу ответить точнее, если переформулируешь. А ещё умею считать: просто напиши выражение вроде «12*8+3».`,
 `🤖 Принято! В полной версии здесь будет нейросеть (GPT/Claude API), а пока я работаю на умных правилах. Попробуй /fact или /joke!`
 ];
@@ -2092,12 +2032,10 @@ return pick(fallbacks);
 }
 let _lastSendT=0;
 function composerSend(){
-/* anti-spam throttle */
 if(Date.now()-_lastSendT<350)return;
 _lastSendT=Date.now();
 let v=txt.value.trim();
 if(S.set?.emojiShortcuts) v = applyEmojiShortcuts(v);
-/* FIX: only admins post to official news */
 if(S.cur==='news'&&!S.isAdmin){toast('📣 Only admins can post in News','⚠️');return;}
 if(S.edit){
 const m=(S.msgs[S.cur]||[]).find(x=>x.id===S.edit);
@@ -2182,7 +2120,7 @@ $('#rbIco').textContent='✏️';$('#rbName').textContent='Editing message';$('#
 $('#replyBar').classList.add('on');
 txt.value=m.text;txt.dispatchEvent(new Event('input'));txt.focus();
 }
-$('#mainBtn').onclick=()=>{if(txt.value.trim()||S.pendingImg||S.pendingVideo)composerSend();else startRec();};
+$('#mainBtn').onclick=()=>{if(txt.value.trim()||S.pendingImg)composerSend();else startRec();};
 msgsEl.addEventListener('click',e=>{
 const c=e.target.closest('[data-act]');if(!c)return;
 const a=c.dataset.act;
@@ -2193,27 +2131,35 @@ if(a==='poll')openPollModal();
 if(a==='ai-help'){txt.value='/help';txt.dispatchEvent(new Event('input'));composerSend();}
 if(a==='ai-joke'){txt.value='/joke';txt.dispatchEvent(new Event('input'));composerSend();}
 });
+/* FIX: photos up to 12MB, compressed to 1280px, uploaded to Storage */
 $('#chatImgInput').onchange=async e=>{
 const file=e.target.files[0];if(!file)return;
-if(file.size>3*1024*1024){toast('Image too large (max 3MB)','⚠️');return;}
-const reader = new FileReader();
-reader.onload = ev => {
-const img = new Image();
-img.onload = () => {
-const c = document.createElement('canvas');
-const maxW=800,maxH=600;
+if(file.size>12*1024*1024){toast('Image too large (max 12MB)','⚠️');return;}
+toast('Processing photo…','📷');
+const reader=new FileReader();
+reader.onload=ev=>{
+const img=new Image();
+img.onload=async()=>{
+const c=document.createElement('canvas');
+const maxW=1280,maxH=1280;
 let w=img.width,h=img.height;
-if(w>maxW){h=h*maxW/w;w=maxW;}
-if(h>maxH){w=w*maxH/h;h=maxH;}
+const k=Math.min(1,maxW/w,maxH/h);
+w=Math.round(w*k);h=Math.round(h*k);
 c.width=w;c.height=h;
 c.getContext('2d').drawImage(img,0,0,w,h);
-S.pendingImg = c.toDataURL('image/jpeg',.75);
+let url=null;
+try{
+const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.72));
+if(blob) url=await FB.uploadMedia(blob,'photo_'+Date.now()+'.jpg','image/jpeg');
+}catch(err){}
+S.pendingImg=url||c.toDataURL('image/jpeg',.72);
 $('#imgAttachPreview').classList.remove('hidden');
 $('#imgAttachPreview').innerHTML=`<div class="img-preview"><img src="${S.pendingImg}"><div class="rm" id="rmImg">✕</div></div>`;
 $('#rmImg').onclick=()=>{S.pendingImg=null;$('#imgAttachPreview').classList.add('hidden');$('#imgAttachPreview').innerHTML='';toggleMain();};
 toggleMain();toast('Photo attached','📷');
 };
-img.src = ev.target.result;
+img.onerror=()=>toast('Could not read image','⚠️');
+img.src=ev.target.result;
 };
 reader.readAsDataURL(file);
 e.target.value='';
@@ -2226,10 +2172,8 @@ closePops();
 const el=document.createElement('div');el.className='pop ctx-pad';el.innerHTML=html;
 document.body.appendChild(el);
 const r=el.getBoundingClientRect();
-const left = Math.max(8, Math.min(x, innerWidth - r.width - 8));
-const top = Math.max(8, Math.min(y, innerHeight - r.height - 8));
-el.style.left = left + 'px';
-el.style.top = top + 'px';
+el.style.left = Math.max(8, Math.min(x, innerWidth - r.width - 8)) + 'px';
+el.style.top = Math.max(8, Math.min(y, innerHeight - r.height - 8)) + 'px';
 return el;
 }
 function popAnchor(html,anchor,above=true){
@@ -2290,7 +2234,7 @@ persist();renderMsgs();renderList();toast('Message deleted','🗑️');
 }
 function deleteForEveryone(m){
 m.deleted=true;m.text='🚫 Deleted';m.type='deleted';
-if(S.cur==='global'||S.cur.startsWith('pm_')||S.channels[S.cur])FB.deleteMessage(S.cur,m.id);
+if(S.cur==='global'||S.cur.startsWith('pm_')||S.channels[S.cur]||S.groups[S.cur])FB.deleteMessage(S.cur,m.id);
 persist();renderMsgs();toast('Deleted for everyone','🗑️');
 }
 function saveToSaved(m){
@@ -2327,6 +2271,8 @@ const q=e.target.closest('.quick');
 if(q){setReply((S.msgs[S.cur]||[]).find(m=>m.id===e.target.closest('.msg').dataset.id));return;}
 const rp=e.target.closest('.m-reply[data-jump]');if(rp)jumpTo(rp.dataset.jump);
 const ph=e.target.closest('.m-photo');if(ph){$('#lbImg').src=ph.querySelector('img').src;$('#lightbox').classList.add('on');}
+const vc=e.target.closest('.vcirc');
+if(vc){const v=vc.querySelector('video');if(v){if(v.paused){v.play().catch(()=>{v.muted=true;v.play().catch(()=>{});});}else v.pause();}return;}
 const av=e.target.closest('[data-u]');if(av&&av.dataset.u&&av.dataset.u!=='ch'&&av.dataset.u!=='ai_assistant'){showProfile(av.dataset.u);return;}
 const po=e.target.closest('.p-opt');
 if(po){vote(e.target.closest('.m-poll').dataset.mid,+po.dataset.i);return;}
@@ -2410,7 +2356,7 @@ const sim=()=>{const t0=performance.now(),D=(m.dur||3)*1000;
 const iv=setInterval(()=>{const p=(performance.now()-t0)/D;setP(Math.min(1,p));
 if(p>=1&&stopFn)stopFn();},60);
 stopFn=()=>{clearInterval(iv);finish();};};
-if(m.url){
+if(m.url&&safeMediaUrl(m.url)){
 const a=new Audio(m.url);a.playbackRate=spd._s||1;spd._aud=a;
 a.ontimeupdate=()=>setP(a.duration?a.currentTime/a.duration:0);
 a.onended=()=>{if(stopFn)stopFn();};
@@ -2427,6 +2373,7 @@ $('#attachBtn').onclick=e=>{
 e.stopPropagation();
 const items=[
 ['📷','Photo','photo'],
+['📹','Video circle','circle'],
 ['📄','Document','doc'],
 ['📍','Location','loc'],
 ['📊','Poll','poll'],
@@ -2438,11 +2385,67 @@ el.querySelectorAll('.ctx-i').forEach(b=>b.onclick=()=>{closePops();attachAction
 };
 function attachAction(a){
 if(a==='photo')$('#chatImgInput').click();
+if(a==='circle')openCircleRecorder();
 if(a==='doc')addMsg(S.cur,{u:'me',type:'doc',fname:pick(['Roadmap_2026.pdf','Whitepaper_v3.pdf','Design_System.pdf']),fsize:pick(['1.2 MB','4.8 MB','820 KB']),st:'sent'});
 if(a==='loc')addMsg(S.cur,{u:'me',type:'loc',coords:rnd(40,60).toFixed(4)+', '+rnd(10,40).toFixed(4),st:'sent'});
 if(a==='poll')openPollModal();
 if(a==='group')openCreateGroup();
 if(a==='channel')openCreateChannel();
+}
+/* ===== VIDEO CIRCLES ===== */
+let circRec=null,circStream=null,circChunks=[],circIv=null,circT0=0;
+function openCircleRecorder(){
+openModal(`<div class="md-head"><b>📹 Video circle</b><button class="icon-btn md-x" id="circClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+<div class="md-body" style="text-align:center">
+<div class="circ-preview"><video id="circPrev" autoplay muted playsinline></video></div>
+<div id="circTimer" style="font-family:var(--disp);color:var(--a1);font-weight:700;margin:6px 0">0:00 / 0:20</div>
+<button class="btn-pri" id="circRecBtn">⏺ Start recording (max 20s)</button>
+</div>`);
+$('#circClose').onclick=()=>stopCircCleanup();
+navigator.mediaDevices.getUserMedia({video:{width:{ideal:480},height:{ideal:480},facingMode:'user'},audio:true}).then(st=>{
+circStream=st;const v=$('#circPrev');if(v)v.srcObject=st;
+}).catch(()=>{toast('Camera unavailable','⚠️');closeModal();});
+$('#circRecBtn').onclick=()=>{
+if(circRec&&circRec.state==='recording'){finishCircle();return;}
+if(!circStream){toast('No camera','⚠️');return;}
+circChunks=[];
+try{circRec=new MediaRecorder(circStream,AMIME?{mimeType:AMIME}:undefined);}catch(e){try{circRec=new MediaRecorder(circStream);}catch(e2){toast('Recorder not supported','⚠️');return;}}
+circRec.ondataavailable=e=>{if(e.data&&e.data.size)circChunks.push(e.data);};
+circRec.onstop=()=>sendCircle();
+try{circRec.start(200);}catch(e){toast('Recorder error','⚠️');return;}
+circT0=Date.now();
+$('#circRecBtn').textContent='⏹ Stop & send';
+clearInterval(circIv);
+circIv=setInterval(()=>{
+const s=(Date.now()-circT0)/1000;
+const t=$('#circTimer');if(t)t.textContent=fmtDur(s)+' / 0:20';
+if(s>=20)finishCircle();
+},200);
+tone(500,900,.08);
+};
+}
+function finishCircle(){clearInterval(circIv);if(circRec&&circRec.state==='recording'){try{circRec.stop();}catch(e){sendCircle();}}}
+function stopCircCleanup(){
+clearInterval(circIv);
+try{if(circRec&&circRec.state==='recording')circRec.stop();}catch(e){}
+if(circStream){circStream.getTracks().forEach(t=>t.stop());circStream=null;}
+circRec=null;closeModal();
+}
+async function sendCircle(){
+const dur=Math.min(20,Math.max(1,(Date.now()-circT0)/1000));
+if(circStream){circStream.getTracks().forEach(t=>t.stop());circStream=null;}
+closeModal();
+if(!circChunks.length){toast('Recording failed','⚠️');return;}
+toast('Sending circle…','📹');
+const blob=new Blob(circChunks,{type:(circRec&&circRec.mimeType)||'video/webm'});
+let url=null;
+try{url=await FB.uploadMedia(blob,'circle_'+Date.now()+'.webm',blob.type||'video/webm');}catch(e){}
+const m={u:'me',type:'circle',dur:Math.round(dur),st:'sent'};
+if(url){m.url=url;}
+else{m.url=URL.createObjectURL(blob);m.local=true;toast('Cloud unavailable — circle visible only on this device','⚠️');}
+if(S.reply){m.reply=S.reply;S.reply=null;$('#replyBar').classList.remove('on');}
+addMsg(S.cur,m);
+circRec=null;
 }
 function openCreateGroup(){
 openModal(`<div class="md-head"><b>👥 Create Group</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -2482,8 +2485,11 @@ S.groups[id] = {name, created:Date.now(), admin:S.me.un};
 S.groupMembers[id] = [S.me.un, ...members];
 Store.set('bb_groups', S.groups);
 Store.set('bb_group_members', S.groupMembers);
+FB.createGroupRemote(id,{name,admin:S.me.un,created:Date.now()});
+FB.joinGroupRemote(id,S.me.un,true);
+members.forEach(m=>FB.joinGroupRemote(id,m,true));
 closeModal();
-toast('Group created!','👥');
+toast('Group created & synced!','👥');
 renderList();
 openChat(id);
 };
@@ -2507,14 +2513,17 @@ if(!un || un.length < 3){toast('Username must be 3+ chars','⚠️');return;}
 const id = 'ch_'+un;
 if(S.channels[id]){toast('Channel link already taken','⚠️');return;}
 const gradients = [['#8e2de2','#4a00e0'],['#ff2743','#ff6a2b'],['#36d1dc','#5b86e5'],['#11998e','#38ef7d']];
-S.channels[id] = {name, username:un, desc, public:true, e:'📢', g:pick(gradients), created:Date.now(), admin:S.me.un};
+const g=pick(gradients);
+S.channels[id] = {name, username:un, desc, public:true, e:'📢', g, created:Date.now(), admin:S.me.un};
 S.groupMembers[id] = [S.me.un];
 S.channelSubs[id] = [S.me.un];
 Store.set('bb_channels', S.channels);
 Store.set('bb_group_members', S.groupMembers);
 Store.set('bb_channel_subs', S.channelSubs);
+FB.createChannelRemote(id,{name,username:un,desc,public:true,e:'📢',g,admin:S.me.un,created:Date.now()});
+FB.subscribeChannel(id,S.me.un);
 closeModal();
-toast('Channel created!','📢');
+toast('Channel created & synced!','📢');
 renderList();
 openChat(id);
 };
@@ -2589,24 +2598,6 @@ const u = S.users[otherUn] || {name:otherUn,e:'👤',g:['#555','#333']};
 S.msgs[chatId].push({id:uid(),sys:1,t:Date.now(),text:`🔒 Private chat with ${u.name}. Messages are only visible to you two.`});
 persist();
 }
-if(!S.fbListeners['msg_'+chatId]){
-FB.listenMessages(chatId, remoteMsgs => {
-if(!remoteMsgs.length)return;
-const localIds=new Set((S.msgs[chatId]||[]).filter(m=>m.id).map(m=>m.id));
-let added=false;
-remoteMsgs.forEach(rm=>{
-if(!localIds.has(rm.id)){
-if(!S.msgs[chatId])S.msgs[chatId]=[];
-S.msgs[chatId].push(rm);added=true;
-const own=rm.u===S.me.un;
-if(!own && !document.hidden && S.cur===chatId){sndRecv();}
-if(!own && S.cur!==chatId){S.unread[chatId]=(S.unread[chatId]||0)+1;}
-}
-});
-if(added){S.msgs[chatId].sort((a,b)=>a.t-b.t);persist();renderMsgs();renderList();}
-});
-S.fbListeners['msg_'+chatId]=true;
-}
 renderList();
 openChat(chatId);
 }
@@ -2643,18 +2634,33 @@ if(isGroup){
 const g = S.groups[S.cur];
 const members = S.groupMembers[S.cur] || [S.me.un];
 const onlineCount = members.filter(m => S.online[m]?.online).length;
+const isMember = members.includes(S.me.un);
 openModal(`<div class="md-head"><b>👥 Group Info</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
 <div class="md-body"><div class="p-ava" style="background:linear-gradient(135deg,#4a6cf7,#6a4cf7)">👥</div>
 <div class="p-name">${esc(g.name)}</div><div class="p-sub">${onlineCount}/${members.length} online</div>
 <p style="font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);font-weight:800;margin:12px 4px 5px">Members</p>
 ${members.map(m => {
-const u = m === S.me.un ? S.me : S.users[m];
-if(!u) return '';
+const u = m === S.me.un ? S.me : (S.users[m]||{name:m,e:'👤',g:['#555','#333']});
 const isOn = S.online[m]?.online;
 return `<div class="mem-row" data-u="${esc(m)}"><div class="c-ava" style="${avaBg(u)}">${safeUrl(u.avatar)?'':esc(u.e||'👤')}</div><div><b>${esc(u.name)} ${m === S.me.un ? '(you)' : ''} ${isOn?'<span class="online-badge"><i></i></span>':''}</b><span>@${esc(m)}${m === g.admin ? ' · admin' : ''}</span></div></div>`;
 }).join('')}
+<button class="${isMember?'btn-ghost':'btn-pri'}" id="grpJoin" style="margin-top:12px">${isMember?'🚪 Leave group':'➕ Join group'}</button>
 </div>`);
 $('#modalRoot .mem-row').forEach(r=>r.onclick=()=>{showProfile(r.dataset.u);});
+$('#grpJoin').onclick=async()=>{
+const cur=S.cur;
+if(isMember){
+S.groupMembers[cur]=S.groupMembers[cur].filter(x=>x!==S.me.un);
+await FB.joinGroupRemote(cur,S.me.un,false);
+toast('Left group','🚪');
+}else{
+S.groupMembers[cur]=[...new Set([...(S.groupMembers[cur]||[]),S.me.un])];
+await FB.joinGroupRemote(cur,S.me.un,true);
+toast('Joined group!','➕');
+}
+Store.set('bb_group_members',S.groupMembers);
+closeModal();renderList();
+};
 return;
 }
 if(isChannel){
@@ -2715,11 +2721,11 @@ const el=popAt(`
 <button class="ctx-i" data-a="saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4V3Z"/></svg>Saved Messages</button>
 <button class="ctx-i" data-a="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l2 2"/></svg>🤖 AI Assistant</button>
 <button class="ctx-i" data-a="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"/><path d="M8 8h8M8 13h6"/></svg>📣 News Channel</button>
-<button class="ctx-i" data-a="readall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 12 4 4L19 4"/><path d="m3 20 4 4L19 12" opacity=".5"/></svg>Mark all as read</button>
+<button class="ctx-i" data-a="readall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 12 4 4L19 4"/></svg>Mark all as read</button>
 <button class="ctx-i" data-a="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.35.95A7 7 0 0 0 14.05 5L13.7 2.5h-4L9.4 5a7 7 0 0 0-2.46 1.42l-2.35-.95-2 3.46 2 1.55A7 7 0 0 0 4.9 12c0 .48.05.94.14 1.4l-2 1.55 2 3.46 2.35-.95c.7.6 1.54 1.1 2.46 1.42l.35 2.62h4l.35-2.62a7 7 0 0 0 2.46-1.42l2.35.95 2-3.46-2-1.55c.09-.46.14-.92.14-1.4Z"/></svg>Settings</button>
 <button class="ctx-i" data-a="inv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/><path d="M19 8v6M16 11h6"/></svg>Invite Friends</button>
-<button class="ctx-i" data-a="group"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M16 11h6"/><path d="M22 21v-2a4 4 0 0 0-3-3.8"/></svg>Create Group</button>
-<button class="ctx-i" data-a="channel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8v18L3 13Z"/><path d="M11 11v6"/><circle cx="11" cy="8" r="1" fill="currentColor"/></svg>Create Channel</button>
+<button class="ctx-i" data-a="group"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M16 11h6"/></svg>Create Group</button>
+<button class="ctx-i" data-a="channel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8v18L3 13Z"/><path d="M11 11v6"/></svg>Create Channel</button>
 ${adminItem}
 <button class="ctx-i danger" data-a="out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Log Out</button>`,12,64);
 el.querySelectorAll('.ctx-i').forEach(b=>b.onclick=()=>{
@@ -2761,7 +2767,6 @@ if($('#modalRoot .modal')){closeModal();return;}
 function openAdminPanel(){
 if(!S.isAdmin){toast('⚠️ Admin access required','⚠️');return;}
 const localAcc = accounts();
-/* merge local accounts + globally known users */
 const merged={};
 Object.entries(localAcc).forEach(([un,u])=>{if(un!==ADMIN_USERNAME)merged[un]={...u,local:true};});
 Object.entries(S.users).forEach(([un,u])=>{if(un!==ADMIN_USERNAME&&un!==S.me.un&&!merged[un])merged[un]={...u};});
@@ -2880,7 +2885,7 @@ if(setView==='main')body=`
 <button class="st-row" data-v="data"><span class="st-ico" style="background:#00a884">${ic('db')}</span><span class="st-t"><b>Data & Storage</b><span>Firebase RTDB + Storage</span></span>${ic('chev','chev')}</button>
 <button class="st-row" data-v="lang"><span class="st-ico" style="background:#3b82f6">${ic('globe')}</span><span class="st-t"><b>Language</b><span>English</span></span>${ic('chev','chev')}</button>
 <div class="st-sec">Support</div>
-<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v3.9 · Firebase</span></span>${ic('chev','chev')}</button>`;
+<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v4.0 · Firebase</span></span>${ic('chev','chev')}</button>`;
 if(setView==='profile')body=`
 <div class="st-me" style="flex-direction:column;text-align:center"><div class="c-ava" id="pfAva" style="width:82px;height:82px;font-size:36px;${avaBg(S.me)}">${safeUrl(S.me.avatar)?'':S.me.e}</div>
 <button class="btn-ghost" id="pfUpload" style="width:auto;padding:8px 16px;margin-top:8px;font-size:12px">📷 Upload photo</button>
@@ -2914,18 +2919,14 @@ if(setView==='appear')body=`
 <span class="wp-opt ${S.set?.wp==='waves'?'on':''}" data-w="waves" style="background:repeating-radial-gradient(circle at 50% 130%,#0a0a10 0 12px,#12121c 12px 13px)"></span></div>
 <div class="st-sec">Text size</div><div class="fs-row">${['Small','Medium','Large'].map((l,i)=>`<button data-f="${i}" class="${S.set?.fs===i?'on':''}">${l}</button>`).join('')}</div>
 <div class="st-sec">Smart features</div>
-<div class="st-row"><span class="st-ico" style="background:#3b82f6">😊</span><span class="st-t"><b>Emoji shortcuts</b><span>:) → 🙂, <3 → ❤️, :D → 😃</span></span>${tgl('emojiShortcuts')}</div>
-<div class="st-row"><span class="st-ico" style="background:#8e2de2">🔗</span><span class="st-t"><b>Link preview</b><span>show preview for links</span></span>${tgl('linkPreview')}</div>`;
+<div class="st-row"><span class="st-ico" style="background:#3b82f6">😊</span><span class="st-t"><b>Emoji shortcuts</b><span>:) → 🙂, <3 → ❤️, :D → 😃</span></span>${tgl('emojiShortcuts')}</div>`;
 if(setView==='data'){
 const bytes=JSON.stringify(S.msgs).length,kb=(bytes/1024).toFixed(1);
 body=`<div class="st-sec">Local storage</div>
 <div class="bar"><i data-w="${Math.min(90,Math.max(4,bytes/400))}"></i></div><div class="bar-lbl"><span>Messages & media</span><span>${kb} KB</span></div>
 <div class="st-sec">Firebase sync</div>
 <div class="st-row"><span class="st-ico" style="background:#ff8f00">${ic('globe')}</span><span class="st-t"><b>Cloud sync</b><span>Messages auto-sync via Firebase</span></span><span style="font-size:9.5px;background:rgba(47,213,97,.15);color:var(--green);font-weight:800;padding:3px 8px;border-radius:8px">ACTIVE</span></div>
-<button class="btn-pri" id="clearCache" style="margin:7px 10px 0;width:calc(100% - 20px);background:#e5352b;box-shadow:0 10px 26px rgba(229,53,43,.35)">Clear local cache</button>
-<div class="st-sec">Auto</div>
-<div class="st-row"><span class="st-ico" style="background:#00a884">${ic('db')}</span><span class="st-t"><b>Auto-Download Media</b><span>photos & files</span></span>${tgl('autoDl')}</div>
-<div class="st-row"><span class="st-ico" style="background:#3b82f6">${ic('pal')}</span><span class="st-t"><b>Autoplay Circles</b><span>play video circles muted</span></span>${tgl('autoPlay')}</div>`;
+<button class="btn-pri" id="clearCache" style="margin:7px 10px 0;width:calc(100% - 20px);background:#e5352b;box-shadow:0 10px 26px rgba(229,53,43,.35)">Clear local cache</button>`;
 }
 if(setView==='lang')body=`<div class="st-sec">Language</div>
 ${[['🇬🇧','en','English'],['🇷🇺','ru','Русский'],['🇪🇸','es','Español'],['🇩🇪','de','Deutsch']].map(([f,c,n])=>`<div class="lang ${c==='en'?'on':''}" data-l="${c}"><span style="font-size:19px">${f}</span><b style="font-size:13.5px">${n}</b></div>`).join('')}
@@ -2934,7 +2935,7 @@ if(setView==='about')body=`
 <div style="text-align:center;padding:18px 0 7px"><div class="al-logo" style="margin:0 auto 12px;width:60px;height:60px"><svg viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
 <div style="font-family:var(--disp);font-weight:900;font-size:18px">BITA<span style="color:var(--a1)">BOLT</span></div>
 <div style="color:var(--tx3);font-size:9.5px;letter-spacing:3px;margin:5px 0 16px">THE GLOBAL MESSENGER</div></div>
-<div class="p-row"><div class="pr-ico">${ic('info')}</div><div><b>Version 3.9</b><span>build 03.08.2026</span></div></div>
+<div class="p-row"><div class="pr-ico">${ic('info')}</div><div><b>Version 4.0</b><span>build 03.08.2026</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('globe')}</div><div><b>Real-time cloud sync</b><span>Firebase Realtime Database</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('zap')}</div><div><b>Lite mode</b><span>Optimized for weak phones</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('lock')}</div><div><b>Local + Cloud storage</b><span>Works offline, syncs when online</span></div></div>
@@ -3044,7 +3045,7 @@ n.innerHTML=`<div class="c-ava" style="${avaBg(u)}">${safeUrl(u.avatar)?'':esc(u
 n.onclick=()=>{if(S.me)openChat(cid||'global');n.remove();};
 $('#toasts').appendChild(n);setTimeout(()=>{n.style.transition='.3s';n.style.opacity='0';setTimeout(()=>n.remove(),300)},4500);
 }
-// ===== WEBRTC CALL MANAGER (FULLY REWORKED SIGNALING) =====
+// ===== WEBRTC CALL MANAGER =====
 const CallManager = {
 initialized: false,
 localStream: null,
@@ -3059,12 +3060,12 @@ pendingCandidates: [],
 _notifElement: null,
 _cancelTimer: null,
 _ringIv: null,
-init() {
+async init() {
 if (this.initialized) return;
 this.initialized = true;
 this.bindUI();
+await FB.cleanStaleSignals();
 this.listenForCalls();
-FB.cleanStaleSignals();
 },
 async _getMedia(type){
 const audio=true;
@@ -3173,7 +3174,7 @@ this.targetUser = targetUser;
 this.callType = type || 'audio';
 this.isInitiator = true;
 this.callState = 'calling';
-toast(`📞 Calling ${esc(S.users[targetUser]?.name || targetUser)}...`, '📞');
+toast(`📞 Calling ${S.users[targetUser]?.name || targetUser}...`, '📞');
 try {
 this.localStream = await this._getMedia(this.callType);
 this.showCallUI(targetUser, this.callType, true);
@@ -3182,13 +3183,12 @@ const offer = await this.peerConnection.createOffer();
 await this.peerConnection.setLocalDescription(offer);
 await FB.sendCallSignal(targetUser, {type:'offer', callType:this.callType, sdp:offer});
 this._startRing();
-/* no answer in 35s → cancel */
 this._cancelTimer=setTimeout(()=>{
 if(this.callState==='calling'||this.callState==='ringing'){
 toast('📞 No answer','📞');
 this.endCall();
 }
-},35000);
+},60000);
 } catch (err) {
 toast('❌ Failed to start call: '+esc(err.message||err), '❌');
 this.endCall();
@@ -3228,7 +3228,7 @@ this._stopRing();
 if(this.callState!=='active')this.callState='active';
 this.startTimer();
 const el=document.getElementById('csTitle');
-if(el)el.textContent='📞 '+esc(S.users[this.targetUser]?.name||this.targetUser||'');
+if(el)el.textContent='📞 '+(S.users[this.targetUser]?.name||this.targetUser||'');
 },
 async _flushCandidates(){
 const q=this.pendingCandidates.splice(0);
@@ -3244,8 +3244,7 @@ this.callState = 'ringing';
 const userName = S.users[from]?.name || from;
 if (this._notifElement) {this._notifElement.remove();this._notifElement = null;}
 const notif = document.createElement('div');
-notif.className = 'notif';
-notif.style.cssText = `position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:301;min-width:320px;text-align:center;background:#1a1a24;border:2px solid var(--a1);border-radius:20px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.8);max-width:92vw`;
+notif.style.cssText = `position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:400;min-width:min(340px,92vw);text-align:center;background:#1a1a24;border:2px solid var(--a1);border-radius:20px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.85)`;
 notif.innerHTML = `
 <div style="font-size:56px;margin:8px 0">${esc(S.users[from]?.e || '📞')}</div>
 <div style="font-size:20px;font-weight:800">${esc(userName)}</div>
@@ -3296,7 +3295,7 @@ const cs = document.getElementById('callScreen');
 if (!cs) return;
 cs.classList.add('on');
 document.getElementById('csTitle').textContent = isInitiator ?
-`📞 Calling ${esc(S.users[targetUser]?.name || targetUser)}...` :
+`📞 Calling ${S.users[targetUser]?.name || targetUser}...` :
 `📞 Connecting...`;
 document.getElementById('csTimer').textContent = '00:00';
 const peers = document.getElementById('csPeers');
@@ -3349,7 +3348,7 @@ if(this._cancelTimer){clearTimeout(this._cancelTimer);this._cancelTimer=null;}
 if (this._notifElement) {this._notifElement.remove();this._notifElement = null;}
 if (this.peerConnection) {try{this.peerConnection.close();}catch(e){} this.peerConnection = null;}
 if (this.localStream) {this.localStream.getTracks().forEach(t => t.stop());this.localStream = null;}
-if (this.remoteStream) {this.remoteStream=null;}
+this.remoteStream = null;
 const cs = document.getElementById('callScreen');
 if (cs) cs.classList.remove('on');
 if(this.targetUser){FB.removeCallSignal(this.targetUser);}
@@ -3421,7 +3420,7 @@ continue;
 }
 }
 };
-/* ===== EMOJI PANEL + CUSTOM STICKERS ===== */
+/* ===== EMOJI PANEL + CUSTOM STICKERS (bigger) ===== */
 function saveStickers(){Store.set(kStk(),S.stickers);}
 function openStickerFactory(){
 openModal(`<div class="md-head"><b>🎨 New sticker</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -3535,7 +3534,7 @@ x.fillStyle=p.red?`rgba(255,39,67,${p.a})`:`rgba(255,255,255,${p.a*.5})`;x.fill(
 requestAnimationFrame(draw);
 })();
 })();
-/* ===== VIEWPORT + KEYBOARD FIX (input field no longer scrolls out of view) ===== */
+/* ===== VIEWPORT + KEYBOARD FIX ===== */
 (function(){
 const fit=()=>{
 const vv=window.visualViewport;
@@ -3549,7 +3548,6 @@ if(window.visualViewport){
 visualViewport.addEventListener('resize',fit);
 visualViewport.addEventListener('scroll',fit);
 }
-/* keep app pinned to top when mobile keyboard opens */
 document.addEventListener('focusin',e=>{
 const t=e.target;
 if(!t||(t.tagName!=='INPUT'&&t.tagName!=='TEXTAREA'))return;
@@ -3583,7 +3581,7 @@ setTimeout(()=>enterApp(acc, false), 100);
 }
 }
 })();
-console.log('✅ Bitabolt v3.9: fixed calls (audio+video), custom stickers, accurate presence, hardened security');
+console.log('✅ Bitabolt v4.0: no duplicates, incoming calls, circles, cloud groups/channels, photo compression, PC layout');
 </script>
 </body>
 </html>
