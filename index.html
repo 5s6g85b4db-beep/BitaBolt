@@ -625,7 +625,7 @@ body{font-size:15px}
 <div class="af"><div class="af-i">🛡️</div><div><b>Admin Panel</b><span>Powerful admin tools to manage users and keep the network safe.</span></div></div>
 </div>
 <div class="al-pulse"><span class="pl">NETWORK<br>PULSE</span><span class="eq"><i></i><i></i><i></i><i></i><i></i><i></i></span><small>firebase realtime · connected</small></div>
-<div class="al-foot">BITABOLT v4.0 · 03.08.2026 · bitabolt.gg</div>
+<div class="al-foot">BITABOLT v4.1 · 03.08.2026 · bitabolt.gg</div>
 </div>
 </div>
 <div class="a-right">
@@ -741,7 +741,6 @@ body{font-size:15px}
 <div id="lightbox"><img id="lbImg" alt=""></div>
 <input type="file" id="chatImgInput" accept="image/*" style="display:none">
 <input type="file" id="stkFile" accept="image/*" style="display:none">
-<!-- CALL SCREEN -->
 <div id="callScreen">
 <div class="call-bg"></div>
 <div class="call-top">
@@ -899,6 +898,7 @@ const STK=['⚡','🔥','😂','❤️','🚀','👍','🎉','😎','🤯','💯
 const ADMIN_USERNAME = 'admin228';
 const ADMIN_PASSWORD = atob('YWRtaW4yMjg=');
 const membersCount=()=>S._totalUsers||(Object.keys(S.users).length+1);
+const isSyncedChat=cid=>cid==='global'||cid==='news'||String(cid).startsWith('pm_')||!!S.groups[cid]||!!S.channels[cid];
 const FB={
 online:false,listeners:{},storageOK:null,
 async uploadMedia(blob,name,type){
@@ -967,11 +967,11 @@ if(v.profile)S.users[uid]={...S.users[uid],...v.profile,id:uid};
 S.online=onlineMap;
 S._onlineCount=onCount;
 S._totalUsers=total;
+try{Store.set(kU(),S.users);}catch(e){}
 cb(onlineMap);
 });
 }catch(e){console.warn('[FB] presence listen:',e);}
 },
-/* FIX: message stored under its OWN id — kills duplicates */
 async sendMsg(chatId,msg,user){
 try{
 const safeChatId=sanitizePath(chatId);
@@ -987,6 +987,23 @@ if(msg.opts)payload.opts=msg.opts;
 await set(ref(db,'chats/'+safeChatId+'/messages/'+key),payload);
 if(Math.random() < 0.05) this.trimMessages(chatId,200);
 }catch(e){console.warn('[FB] sendMsg:',e);}
+},
+/* FIX: update existing message in cloud (edits, votes, deletes) */
+async updateMessage(chatId,msg){
+try{
+const key=sanitizePath(msg.id);
+const payload={id:key,u:msg.u,text:(msg.type==='sticker'?String(msg.text||'').slice(0,300000):sanitizeText(msg.text||'')),type:msg.type||'text',t:msg.t,st:msg.st||'sent'};
+if(msg.reply)payload.reply=msg.reply;
+if(msg.dur)payload.dur=msg.dur;
+if(msg.wf)payload.wf=msg.wf;
+if(msg.img){const su=safeUrl(msg.img);if(su&&su.length<=1500000)payload.img=su;}
+if(msg.q)payload.q=sanitizeText(msg.q);
+if(msg.opts)payload.opts=msg.opts;
+if(msg.edited)payload.edited=true;
+if(msg.editedAt)payload.editedAt=msg.editedAt;
+if(msg.deleted)payload.deleted=true;
+await set(ref(db,'chats/'+sanitizePath(chatId)+'/messages/'+key),payload);
+}catch(e){console.warn('[FB] updateMessage:',e);}
 },
 async deleteMessage(chatId,msgId){
 try{await remove(ref(db,'chats/'+sanitizePath(chatId)+'/messages/'+sanitizePath(msgId)));}catch(e){}
@@ -1072,13 +1089,11 @@ try{await set(ref(db,'channels/'+sanitizePath(channelId)+'/subs/'+sanitizePath(u
 async unsubscribeChannel(channelId,un){
 try{await remove(ref(db,'channels/'+sanitizePath(channelId)+'/subs/'+sanitizePath(un)));}catch(e){}
 },
-/* groups & channels cloud sync */
 async createGroupRemote(id,meta){try{await set(ref(db,'groups/'+sanitizePath(id)+'/meta'),meta);}catch(e){}},
 async joinGroupRemote(id,un,join){try{await set(ref(db,'groups/'+sanitizePath(id)+'/members/'+sanitizePath(un)),join?{t:Date.now()}:null);}catch(e){}},
 listenGroups(cb){try{this.listeners.groups=onValue(ref(db,'groups'),snap=>cb(snap.val()||{}));}catch(e){}},
 async createChannelRemote(id,meta){try{await set(ref(db,'channels/'+sanitizePath(id)+'/meta'),meta);}catch(e){}},
 listenChannels(cb){try{this.listeners.chans=onValue(ref(db,'channels'),snap=>cb(snap.val()||{}));}catch(e){}},
-/* CALL SIGNALING */
 async sendCallSignal(target, signal){
 try{
 const base='calls/'+sanitizePath(target)+'/'+sanitizePath(S.me.un);
@@ -1130,6 +1145,37 @@ if(navigator.onLine)FB.setConnStatus(true);
 window.addEventListener('online',()=>FB.setConnStatus(true));
 window.addEventListener('offline',()=>FB.setConnStatus(false));
 const accounts=()=>Store.get('bb_accounts',{});
+/* FIX: users registered on THIS device must be visible to everyone here (admin too) */
+function mergeLocalUsers(){
+const all=accounts();
+Object.values(all).forEach(a=>{
+if(!a||a.un===S.me?.un)return;
+const ex=S.users[a.un];
+if(!ex){
+S.users[a.un]={id:a.un,name:a.name||a.un,e:a.e||'👤',g:a.g||['#555','#333'],bio:a.bio||'',avatar:a.avatar||''};
+}else{
+if(!ex.name&&a.name)ex.name=a.name;
+if(!ex.avatar&&a.avatar)ex.avatar=a.avatar;
+if(!ex.e&&a.e)ex.e=a.e;
+if(!ex.g&&a.g)ex.g=a.g;
+}
+});
+}
+let _usersFetchPending=false;
+/* FIX: unknown author gets a placeholder + background profile fetch (no more "Unknown") */
+function ensureUser(un){
+if(!un)return;
+if(!S.users[un]){
+S.users[un]={id:un,name:'@'+un,e:'👤',g:['#555','#333']};
+}
+if(!_usersFetchPending){
+_usersFetchPending=true;
+setTimeout(()=>{
+_usersFetchPending=false;
+FB.fetchAllUsers().then(()=>{mergeLocalUsers();try{Store.set(kU(),S.users);}catch(e){}if(S.cur)renderMsgs();renderList();});
+},800);
+}
+}
 let pickE='⚡',pickG=ACCENTS[0],pickAvatar=null;
 function showSec(id){$$('.asec').forEach(s=>s.classList.toggle('on',s.id===id));}
 function showTab(t){
@@ -1278,7 +1324,7 @@ S.msgs.global=[
 {id:uid(),sys:1,t:now+1,text:'⚡ Messages sync in real-time via Firebase. Say hello!'}
 ];
 S.msgs.news=[
-{id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 4.0 is here.**\n• 🐛 Fixed duplicate messages (single ID system)\n• 📞 Incoming calls now pop up correctly\n• 📹 Video circles — record & send!\n• 👥 Groups & channels now sync via cloud\n• 📷 Photos compressed + uploaded to Storage\n• 🖥️ PC version improvements',views:'—'},
+{id:uid(),u:'ch',t:now-3600e3,text:'⚡ **Bitabolt 4.1 is here.**\n• 👤 Fixed «Unknown» users — profiles now load reliably\n• 💬 Private chats & profiles work for all users\n• 📞 Call screen shows online status before dialing\n• ✏️ Edits & poll votes now sync for everyone\n• 🗑️ «Delete for everyone» really deletes for everyone\n• 😀 Reactions work in all chats',views:'—'},
 {id:uid(),u:'ch',t:now-1200e3,text:'🔒 Your data is cached locally and synced to the cloud. Works offline, syncs when back online.\n📱 Lite mode for smooth performance on budget phones.',views:'—'}
 ];
 S.msgs.saved=[{id:uid(),sys:1,t:now,text:'🔖 This is your private cloud — forward anything here or write notes to yourself.'}];
@@ -1307,6 +1353,10 @@ S.slowMode=Store.get('bb_slowmode',{});
 S.stickers=Store.get(kStk(),[]);
 if(!S.msgs.global.length&&!S.msgs.news.length)seedFresh();
 if(!S.msgs.ai_assistant.length)S.msgs.ai_assistant=[{id:uid(),sys:1,t:Date.now(),text:'🤖 Привет! Я твой AI-ассистент. Задавай любые вопросы!'}];
+/* FIX: always merge local device accounts + refetch cloud profiles */
+mergeLocalUsers();
+FB.fetchAllUsers().then(()=>{mergeLocalUsers();try{Store.set(kU(),S.users);}catch(e){}});
+setTimeout(()=>{FB.fetchAllUsers().then(()=>{mergeLocalUsers();if(S.cur)renderMsgs();renderList();});},5000);
 applyAccent();
 document.body.className='wp-'+(S.set.wp||'dots');
 if(S.set.lite)document.body.classList.add('lite');
@@ -1360,9 +1410,10 @@ S.msgs[cid].push(rm);added=true;
 const own=rm.u===S.me.un;
 if(!own && !document.hidden && S.cur===cid){sndRecv();}
 if(!own && S.cur!==cid){S.unread[cid]=(S.unread[cid]||0)+1;}
+if(!own)ensureUser(rm.u);
 } else {
 const existing = S.msgs[cid].find(m=>m.id===rm.id);
-if(existing && (rm.t||0)>(existing.t||0)){Object.assign(existing,rm);added=true;}
+if(existing && (rm.deleted||rm.edited||rm.editedAt||(rm.t||0)>(existing.t||0))){Object.assign(existing,rm);added=true;}
 }
 });
 if(added){S.msgs[cid].sort((a,b)=>(a.t||0)-(b.t||0));persist();renderMsgs();renderList();}
@@ -1380,18 +1431,18 @@ let ch=false;
 Object.entries(S.typing).forEach(([k,v])=>{if(Date.now()-v.t>3500){delete S.typing[k];ch=true;}});
 if(ch){if(S.cur)paintHead();renderList();}
 },1200);
-FB.listenReactions('global',rxData=>{
+const applyReactions=(cid,rxData)=>{
 const touched=new Set();
 Object.entries(rxData).forEach(([msgId,users])=>{
-const m=S.msgs.global.find(x=>x.id===msgId);if(!m)return;touched.add(msgId);
+const m=(S.msgs[cid]||[]).find(x=>x.id===msgId);if(!m)return;touched.add(msgId);
 const rx={};
 Object.entries(users).forEach(([u,d])=>{(rx[d.e]=rx[d.e]||[]).push(u);});
 m.rx=Object.keys(rx).length?rx:null;
 });
-S.msgs.global.forEach(m=>{if(m.rx&&!touched.has(m.id))m.rx=null;});
-if(S.cur==='global')renderMsgs();
-});
-/* FIX: groups & channels now sync from cloud */
+(S.msgs[cid]||[]).forEach(m=>{if(m.rx&&!touched.has(m.id))m.rx=null;});
+if(S.cur===cid)renderMsgs();
+};
+FB.listenReactions('global',rxData=>applyReactions('global',rxData));
 FB.listenGroups(data=>{
 Object.entries(data).forEach(([id,node])=>{
 if(!node||!node.meta)return;
@@ -1473,7 +1524,7 @@ Object.keys(S.msgs).forEach(cid=>{
 if(cid.startsWith('pm_')&&S.msgs[cid]&&S.msgs[cid].length){
 const parts=cid.replace('pm_','').split('_');
 const other=parts.find(p=>p!==S.me.un);
-const u=S.users[other]||{name:other,e:'👤',g:['#555','#333']};
+const u=S.users[other]||{name:'@'+other,e:'👤',g:['#555','#333']};
 privateChats.push({
 c:{id:cid,type:'private',title:u.name,e:u.e,g:u.g,otherUn:other},
 t:lastMsg(cid)?.t||0
@@ -1528,7 +1579,7 @@ else if(isChannel) c = {id, type:'channel', title:S.channels[id].name, e:S.chann
 else if(isPrivate){
 const parts=id.replace('pm_','').split('_');
 const other=parts.find(p=>p!==S.me.un);
-const u=S.users[other]||{name:other,e:'👤',g:['#555','#333']};
+const u=S.users[other]||{name:'@'+other,e:'👤',g:['#555','#333']};
 c = {id, type:'private', title:u.name, e:u.e, g:u.g, otherUn:other};
 }
 else c = CHATS[id];
@@ -1560,14 +1611,30 @@ S.msgs[id].push(rm);added=true;
 const own=rm.u===S.me.un;
 if(!own && !document.hidden && S.cur===id){sndRecv();}
 if(!own && S.cur!==id){S.unread[id]=(S.unread[id]||0)+1;}
+if(!own)ensureUser(rm.u);
 }else{
 const ex=S.msgs[id].find(m=>m.id===rm.id);
-if(ex&&(rm.t||0)>=(ex.t||0)){Object.assign(ex,rm);added=true;}
+if(ex&&(rm.deleted||rm.edited||rm.editedAt||(rm.t||0)>=(ex.t||0))){Object.assign(ex,rm);added=true;}
 }
 });
 if(added){S.msgs[id].sort((a,b)=>(a.t||0)-(b.t||0));persist();renderMsgs();renderList();}
 });
 S.fbListeners['msg_'+id]=true;
+}
+/* FIX: reactions now sync in every chat, not just global */
+if(isSyncedChat(id)&&id!=='global'&&!S.fbListeners['rx_'+id]){
+FB.listenReactions(id,rxData=>{
+const touched=new Set();
+Object.entries(rxData).forEach(([msgId,users])=>{
+const m=(S.msgs[id]||[]).find(x=>x.id===msgId);if(!m)return;touched.add(msgId);
+const rx={};
+Object.entries(users).forEach(([u,d])=>{(rx[d.e]=rx[d.e]||[]).push(u);});
+m.rx=Object.keys(rx).length?rx:null;
+});
+(S.msgs[id]||[]).forEach(m=>{if(m.rx&&!touched.has(m.id))m.rx=null;});
+if(S.cur===id)renderMsgs();
+});
+S.fbListeners['rx_'+id]=true;
 }
 }
 function paintHead(){
@@ -1684,7 +1751,7 @@ return `<div class="empty"><div class="e-orb"><i></i><i></i>🤖</div>
 if(S.cur.startsWith('pm_')){
 const parts=S.cur.replace('pm_','').split('_');
 const other=parts.find(p=>p!==S.me.un);
-const u=S.users[other]||{name:other,e:'👤'};
+const u=S.users[other]||{name:'@'+other,e:'👤'};
 return `<div class="empty"><div class="e-orb"><i></i><i></i>${esc(u.e||'👤')}</div>
 <h3>Chat with ${esc(u.name)}</h3><p>This is a private conversation. Messages are only visible to you two.</p>
 <div class="e-chips"><button data-act="hello">👋 Say hello</button></div></div>`;
@@ -1733,7 +1800,10 @@ const mine=m.u==='me'||m.u===S.me?.un;
 let u;
 if(mine)u=S.me;
 else if(m.u==='ai_assistant')u={name:'🤖 AI Assistant',e:'🤖',g:['#6c5ce7','#a29bfe'],id:'ai_assistant'};
-else u=S.users[m.u]||{name:'Unknown',e:'👤',g:['#555','#333'],id:m.u};
+else{
+if(!S.users[m.u])ensureUser(m.u);
+u=S.users[m.u]||{name:'@'+m.u,e:'👤',g:['#555','#333'],id:m.u};
+}
 const ch=CHATS[S.cur] || null;
 const isCh=ch?.type==='channel'&&S.cur==='news';
 const first=!prev||prev.u!==m.u||prev.sys||(m.t-prev.t)>300000;
@@ -1834,10 +1904,7 @@ ${ch.desc?`<div class="p-row"><div class="pr-ico"><svg viewBox="0 0 24 24" fill=
 <button class="pa2" id="chanCloseBtn" style="flex:1">Close</button>
 </div>
 </div>`);
-$('#chanSubBtn').onclick=()=>{
-closeModal();
-toggleSubscribe(channelId);
-};
+$('#chanSubBtn').onclick=()=>{closeModal();toggleSubscribe(channelId);};
 $('#chanCloseBtn').onclick=closeModal;
 };
 const txt=$('#txt');
@@ -2006,11 +2073,11 @@ return `📅 Сегодня **${now.toLocaleDateString('ru-RU',{weekday:'long',d
 }
 if(/(привет|здравствуй|хай|hello|hi\b|hey|добрый (день|вечер|утро))/.test(lower))return `🤖 Привет, ${userName}! Рад тебя видеть. Чем могу помочь? Могу посчитать, рассказать шутку (/joke) или факт (/fact).`;
 if(/(как дела|как ты|how are you)/.test(lower))return `🤖 У меня всё отлично — все системы в норме ⚡ А у тебя как дела, ${userName}?`;
-if(/(кто ты|что ты такое|what are you|who are you)/.test(lower))return `🤖 Я AI-ассистент Bitabolt v4.0. Умею:\n• 💬 общаться и запоминать контекст\n• 🧮 считать выражения\n• 🌡️ конвертировать единицы\n• 🎲 играть (/roll, /flip, /choose)\n• 💻 показывать код (/code)\nПопробуй /help!`;
+if(/(кто ты|что ты такое|what are you|who are you)/.test(lower))return `🤖 Я AI-ассистент Bitabolt v4.1. Умею:\n• 💬 общаться и запоминать контекст\n• 🧮 считать выражения\n• 🌡️ конвертировать единицы\n• 🎲 играть (/roll, /flip, /choose)\n• 💻 показывать код (/code)\nПопробуй /help!`;
 if(/(спасибо|благодарю|thanks|thank you)/.test(lower))return `🤖 Пожалуйста, ${userName}! Обращайся ещё ⚡`;
 if(/(пока|до свидания|bye|goodbye)/.test(lower))return `🤖 До встречи, ${userName}! Буду ждать 👋`;
-if(/(bitabolt|битаболт|мессенджер)/.test(lower))return `⚡ **Bitabolt** — глобальный мессенджер нового поколения!\n🔹 Real-time синхронизация через Firebase\n🔹 PBKDF2-хеширование паролей\n🔹 HD аудио и видеозвонки через WebRTC\n🔹 Группы, каналы, личные чаты\n🔹 Видеокружки и свои стикеры\n🔹 AI-ассистент (это я! 🤖)\nВерсия 4.0 — самая стабильная!`;
-if(/(код|code|javascript|python|питон|джаваскрипт|html|css)/.test(lower))return `💻 Отличная тема! Могу показать пример — набери \`/code\`. Или спроси конкретно: «напиши fizzbuzz» и т.д.`;
+if(/(bitabolt|битаболт|мессенджер)/.test(lower))return `⚡ **Bitabolt** — глобальный мессенджер нового поколения!\n🔹 Real-time синхронизация через Firebase\n🔹 PBKDF2-хеширование паролей\n🔹 HD аудио и видеозвонки через WebRTC\n🔹 Группы, каналы, личные чаты\n🔹 Видеокружки и свои стикеры\n🔹 AI-ассистент (это я! 🤖)\nВерсия 4.1 — самая стабильная!`;
+if(/(код|code|javascript|python|питон|джаваскрипт|html|css)/.test(lower))return `💻 Отличная тема! Могу показать пример — набери \`/code\`.`;
 if(/(погода|weather)/.test(lower))return `🌤️ У меня нет доступа к интернету в этой версии, но рекомендую: weather.com, Яндекс.Погода или Gismeteo.`;
 if(/(идея|idea|придумай|что делать|чем заняться)/.test(lower)){
 const ideas=[
@@ -2045,7 +2112,9 @@ if(!S.editHistory[m.id])S.editHistory[m.id]=[];
 S.editHistory[m.id].push({old:m.text,new:v,t:Date.now()});
 if(S.editHistory[m.id].length>10)S.editHistory[m.id].shift();
 }
-m.text=v;m.edited=true;
+m.text=v;m.edited=true;m.editedAt=Date.now();
+/* FIX: edits now sync to the cloud */
+if(isSyncedChat(S.cur))FB.updateMessage(S.cur,m);
 toast('Message edited','✏️');
 }
 else if(!v)toast('Message is empty','⚠️');
@@ -2131,7 +2200,6 @@ if(a==='poll')openPollModal();
 if(a==='ai-help'){txt.value='/help';txt.dispatchEvent(new Event('input'));composerSend();}
 if(a==='ai-joke'){txt.value='/joke';txt.dispatchEvent(new Event('input'));composerSend();}
 });
-/* FIX: photos up to 12MB, compressed to 1280px, uploaded to Storage */
 $('#chatImgInput').onchange=async e=>{
 const file=e.target.files[0];if(!file)return;
 if(file.size>12*1024*1024){toast('Image too large (max 12MB)','⚠️');return;}
@@ -2230,11 +2298,13 @@ if(a==='delall')confirmModal('Delete for everyone?','Delete',()=>deleteForEveryo
 function deleteMessage(m){
 S.msgs[S.cur]=S.msgs[S.cur].filter(x=>x.id!==m.id);
 if(S.pin[S.cur]===m.id)S.pin[S.cur]=null;
+if(isSyncedChat(S.cur))FB.deleteMessage(S.cur,m.id);
 persist();renderMsgs();renderList();toast('Message deleted','🗑️');
 }
 function deleteForEveryone(m){
 m.deleted=true;m.text='🚫 Deleted';m.type='deleted';
-if(S.cur==='global'||S.cur.startsWith('pm_')||S.channels[S.cur]||S.groups[S.cur])FB.deleteMessage(S.cur,m.id);
+/* FIX: broadcast the deleted flag so it disappears for everyone */
+if(isSyncedChat(S.cur))FB.updateMessage(S.cur,m);
 persist();renderMsgs();toast('Deleted for everyone','🗑️');
 }
 function saveToSaved(m){
@@ -2286,9 +2356,9 @@ if(!m)return;m.rx=m.rx||{};m.rx[e]=m.rx[e]||[];
 const myId=S.me?S.me.un:'me';
 const i=m.rx[e].indexOf(myId);
 if(i>-1){m.rx[e].splice(i,1);if(!m.rx[e].length)delete m.rx[e];
-if(S.cur==='global'||S.cur.startsWith('pm_'))FB.removeReaction(S.cur,m.id,myId);}
+if(isSyncedChat(S.cur))FB.removeReaction(S.cur,m.id,myId);}
 else{m.rx[e].push(myId);tone(900,1400,.07);
-if(S.cur==='global'||S.cur.startsWith('pm_'))FB.sendReaction(S.cur,m.id,e,myId);}
+if(isSyncedChat(S.cur))FB.sendReaction(S.cur,m.id,e,myId);}
 persist();renderMsgs();
 }
 const AMIME=(window.MediaRecorder&&window.MediaRecorder.isTypeSupported&&
@@ -2549,6 +2619,8 @@ const m=(S.msgs[S.cur]||[]).find(x=>x.id===mid);if(!m||!Array.isArray(m.opts))re
 const myId=S.me?.un||'me';
 m.opts.forEach(o=>{o.v=o.v||[];let i=o.v.indexOf(myId);if(i>-1)o.v.splice(i,1);i=o.v.indexOf('me');if(i>-1)o.v.splice(i,1);});
 m.opts[idx].v=m.opts[idx].v||[];m.opts[idx].v.push(myId);tone(700,1100,.08);
+/* FIX: votes sync to the cloud */
+if(isSyncedChat(S.cur))FB.updateMessage(S.cur,m);
 persist();renderMsgs();
 }
 function openForward(m){
@@ -2557,7 +2629,7 @@ return {cid:c.id,title:mt.title,e:mt.e,g:mt.g,sub:c.type==='global'?'global room
 const groupRows=Object.entries(S.groups).map(([id,g])=>({cid:id,title:g.name,e:'👥',g:['#4a6cf7','#6a4cf7'],sub:'group'}));
 const pmRows=Object.keys(S.msgs).filter(cid=>cid.startsWith('pm_')).map(cid=>{
 const parts=cid.replace('pm_','').split('_');const other=parts.find(p=>p!==S.me.un);
-const u=S.users[other]||{name:other,e:'👤',g:['#555','#333']};
+const u=S.users[other]||{name:'@'+other,e:'👤',g:['#555','#333']};
 return {cid,title:u.name,e:u.e,g:u.g,sub:'private'};});
 const rows=[...baseRows,...pmRows,...groupRows].map(r=>
 `<div class="mem-row" data-c="${r.cid}"><div class="c-ava" style="background:linear-gradient(135deg,${r.g[0]},${r.g[1]})">${r.e}</div><div><b>${esc(r.title)}</b><span>${r.sub}</span></div></div>`).join('');
@@ -2570,10 +2642,16 @@ addMsg(cid,{...m,id:uid(),u:'me',st:'sent',t:Date.now(),forward:{from:m.u==='me'
 toast('Forwarded','↪');openChat(cid);
 });
 }
+/* FIX: profile opens even for users we haven't loaded yet */
 function showProfile(uidp){
 if(!uidp||uidp==='ch')return;
 if(uidp==='me'||uidp===S.me?.un){showMyProfile();return;}
-const u=S.users[uidp];if(!u){toast('👤 User not found','⚠️');return;}
+let u=S.users[uidp];
+if(!u){
+u={id:uidp,name:'@'+uidp,e:'👤',g:['#555','#333']};
+S.users[uidp]=u;
+FB.fetchAllUsers().then(()=>{mergeLocalUsers();renderMsgs();renderList();});
+}
 const isOn=S.online[uidp]?.online;
 const isAdminUser_ = uidp === ADMIN_USERNAME;
 openModal(`<div class="md-head"><b>Profile</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -2594,7 +2672,7 @@ function openPrivateChat(otherUn){
 const chatId = getPrivateChatId(S.me.un, otherUn);
 if(!S.msgs[chatId]) S.msgs[chatId] = [];
 if(!S.msgs[chatId].length){
-const u = S.users[otherUn] || {name:otherUn,e:'👤',g:['#555','#333']};
+const u = S.users[otherUn] || {name:'@'+otherUn,e:'👤',g:['#555','#333']};
 S.msgs[chatId].push({id:uid(),sys:1,t:Date.now(),text:`🔒 Private chat with ${u.name}. Messages are only visible to you two.`});
 persist();
 }
@@ -2640,7 +2718,7 @@ openModal(`<div class="md-head"><b>👥 Group Info</b><button class="icon-btn md
 <div class="p-name">${esc(g.name)}</div><div class="p-sub">${onlineCount}/${members.length} online</div>
 <p style="font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);font-weight:800;margin:12px 4px 5px">Members</p>
 ${members.map(m => {
-const u = m === S.me.un ? S.me : (S.users[m]||{name:m,e:'👤',g:['#555','#333']});
+const u = m === S.me.un ? S.me : (S.users[m]||{name:'@'+m,e:'👤',g:['#555','#333']});
 const isOn = S.online[m]?.online;
 return `<div class="mem-row" data-u="${esc(m)}"><div class="c-ava" style="${avaBg(u)}">${safeUrl(u.avatar)?'':esc(u.e||'👤')}</div><div><b>${esc(u.name)} ${m === S.me.un ? '(you)' : ''} ${isOn?'<span class="online-badge"><i></i></span>':''}</b><span>@${esc(m)}${m === g.admin ? ' · admin' : ''}</span></div></div>`;
 }).join('')}
@@ -2885,7 +2963,7 @@ if(setView==='main')body=`
 <button class="st-row" data-v="data"><span class="st-ico" style="background:#00a884">${ic('db')}</span><span class="st-t"><b>Data & Storage</b><span>Firebase RTDB + Storage</span></span>${ic('chev','chev')}</button>
 <button class="st-row" data-v="lang"><span class="st-ico" style="background:#3b82f6">${ic('globe')}</span><span class="st-t"><b>Language</b><span>English</span></span>${ic('chev','chev')}</button>
 <div class="st-sec">Support</div>
-<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v4.0 · Firebase</span></span>${ic('chev','chev')}</button>`;
+<button class="st-row" data-v="about"><span class="st-ico" style="background:#64748b">${ic('info')}</span><span class="st-t"><b>About Bitabolt</b><span>v4.1 · Firebase</span></span>${ic('chev','chev')}</button>`;
 if(setView==='profile')body=`
 <div class="st-me" style="flex-direction:column;text-align:center"><div class="c-ava" id="pfAva" style="width:82px;height:82px;font-size:36px;${avaBg(S.me)}">${safeUrl(S.me.avatar)?'':S.me.e}</div>
 <button class="btn-ghost" id="pfUpload" style="width:auto;padding:8px 16px;margin-top:8px;font-size:12px">📷 Upload photo</button>
@@ -2935,7 +3013,7 @@ if(setView==='about')body=`
 <div style="text-align:center;padding:18px 0 7px"><div class="al-logo" style="margin:0 auto 12px;width:60px;height:60px"><svg viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
 <div style="font-family:var(--disp);font-weight:900;font-size:18px">BITA<span style="color:var(--a1)">BOLT</span></div>
 <div style="color:var(--tx3);font-size:9.5px;letter-spacing:3px;margin:5px 0 16px">THE GLOBAL MESSENGER</div></div>
-<div class="p-row"><div class="pr-ico">${ic('info')}</div><div><b>Version 4.0</b><span>build 03.08.2026</span></div></div>
+<div class="p-row"><div class="pr-ico">${ic('info')}</div><div><b>Version 4.1</b><span>build 03.08.2026</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('globe')}</div><div><b>Real-time cloud sync</b><span>Firebase Realtime Database</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('zap')}</div><div><b>Lite mode</b><span>Optimized for weak phones</span></div></div>
 <div class="p-row"><div class="pr-ico">${ic('lock')}</div><div><b>Local + Cloud storage</b><span>Works offline, syncs when online</span></div></div>
@@ -3137,14 +3215,17 @@ toast(ccSpeaker.classList.contains('on') ? '🔊 Speaker on' : '🔉 Speaker off
 });
 }
 },
+/* FIX: shows online status + warns if user is offline (call can't be delivered) */
 showCallTypeModal(targetUser) {
 const u = S.users[targetUser] || { name: targetUser, e: '👤' };
+const isOn = S.online[targetUser]?.online;
 openModal(`
 <div class="md-head"><b>📞 Call ${esc(u.name)}</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
 <div class="md-body" style="text-align:center;padding:20px 0">
 <div style="font-size:48px;margin:8px 0">${esc(u.e || '👤')}</div>
 <div style="font-size:18px;font-weight:800">${esc(u.name)}</div>
-<div style="color:var(--tx2);margin:4px 0 16px">@${esc(targetUser)}</div>
+<div style="color:var(--tx2);margin:4px 0 6px">@${esc(targetUser)}</div>
+<div style="margin-bottom:14px">${isOn?'<span class="online-badge"><i></i> online</span>':'<span style="color:var(--tx3);font-size:12px">⚠ not online — call will wait 60s</span>'}</div>
 <div style="display:flex;gap:20px;justify-content:center">
 <button style="width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callAudioBtn">📞</button>
 <button style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8e2de2,#4a00e0);display:flex;align-items:center;justify-content:center;color:#fff;border:none;font-size:28px;cursor:pointer" id="callVideoBtn">📹</button>
@@ -3170,6 +3251,9 @@ _stopRing(){if(this._ringIv){clearInterval(this._ringIv);this._ringIv=null;}},
 async startCall(targetUser, type) {
 if (this.callState !== 'idle') {toast('Already in a call', '⚠️');return;}
 if (targetUser === S.me.un) {toast('Cannot call yourself', '⚠️');return;}
+if(!S.online[targetUser]?.online){
+toast('⚠️ User is offline — call reaches them only if they open Bitabolt within 60s','⚠️');
+}
 this.targetUser = targetUser;
 this.callType = type || 'audio';
 this.isInitiator = true;
@@ -3241,7 +3325,7 @@ this.targetUser = from;
 this.callType = signal.callType || 'audio';
 this.isInitiator = false;
 this.callState = 'ringing';
-const userName = S.users[from]?.name || from;
+const userName = S.users[from]?.name || ('@'+from);
 if (this._notifElement) {this._notifElement.remove();this._notifElement = null;}
 const notif = document.createElement('div');
 notif.style.cssText = `position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:400;min-width:min(340px,92vw);text-align:center;background:#1a1a24;border:2px solid var(--a1);border-radius:20px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.85)`;
@@ -3420,7 +3504,7 @@ continue;
 }
 }
 };
-/* ===== EMOJI PANEL + CUSTOM STICKERS (bigger) ===== */
+/* ===== EMOJI PANEL + CUSTOM STICKERS ===== */
 function saveStickers(){Store.set(kStk(),S.stickers);}
 function openStickerFactory(){
 openModal(`<div class="md-head"><b>🎨 New sticker</b><button class="icon-btn md-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -3581,7 +3665,7 @@ setTimeout(()=>enterApp(acc, false), 100);
 }
 }
 })();
-console.log('✅ Bitabolt v4.0: no duplicates, incoming calls, circles, cloud groups/channels, photo compression, PC layout');
+console.log('✅ Bitabolt v4.1: profiles fixed, calls with presence check, sync edits/votes/deletes');
 </script>
 </body>
 </html>
